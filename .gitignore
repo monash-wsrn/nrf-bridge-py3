@@ -1,0 +1,14 @@
+*.cydsn/CortexM3/
+*.cydsn/Export/
+*.cydsn/Generated_Source/
+*.cydsn/codegentemp/
+*.cydsn/*.cycdx
+*.cydsn/*.cyfit
+*.cydsn/*.cyprj.*
+*.cydsn/*.rpt
+*.cydsn/*.svd
+*.cydsn/*_timing.html
+*.cywrk.*
+Backup/
+ComponentUpdateLog.txt
+*.pyc
