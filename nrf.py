@@ -134,9 +134,6 @@ class bridge:
         self.send_packet('\xff' if bootloader else '\xfe')
     
     def flash(self,filename,which=None):
-        self.reset(True)
-        time.sleep(0.3)
-        
         with open(filename) as f: h=f.readlines() #read in .cyacd file
         
         if which=='Master' or (which is None and 'Master' in filename):
@@ -227,10 +224,16 @@ class bridge:
             self.set_TX_address(i)
             if self.get_ID_type()[6]==0: #only flash eBugs (not cameras)
                 print 'Flashing eBug with ID '+repr(j)
+                self.reset(True)
+                time.sleep(0.3)
                 self.flash(filename,which)
     
     def get_blobs(self):
         x=self.send_packet_check_response('\x90')
-        n=(len(x)-4)/8
-        z=struct.unpack('<I'+'HHHH'*n,x)
-        return z[0],[z[1+i*4:1+(i+1)*4] for i in range(n)]
+        n=len(x)/4
+        z=struct.unpack('<'+'I'*n,x)
+        unpack=lambda i: tuple(i>>offset & (1<<length)-1 for offset,length in [(0,11),(11,11),(22,2),(24,8)])
+        return z[0],[unpack(i) for i in z[1:]]
+    
+    def set_camera_thresholds(self,thresholds):
+        self.send_packet('\x93'+struct.pack('<'+'B'*8,*thresholds))
