@@ -156,8 +156,8 @@ class bridge:
             data+='\0'*14 #add 14 bytes to make 9 packets of 30 bytes
             
             for i in range(9):
-                self.send_packet(chr(row)+chr(array+i<<2)+data[i*30:(i+1)*30]) #header contains row, array, and seq numbers 
-                time.sleep(0.003)
+                self.send_packet(chr(row)+chr(array+(i<<2))+data[i*30:(i+1)*30]) #header contains row, array, and seq numbers
+                #time.sleep(0.003) #sometimes delay is needed, sometimes not
             print '%d/%d'%(n+1,len(h)-2),'\r',
             sys.stdout.flush()
         print
