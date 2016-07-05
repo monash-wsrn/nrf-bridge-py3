@@ -237,3 +237,13 @@ class bridge:
     
     def set_camera_thresholds(self,thresholds):
         self.send_packet('\x93'+struct.pack('<'+'B'*8,*thresholds))
+    
+    def get_laser_event(self):
+        x=self.send_packet_check_response('\x80')
+        return struct.unpack('<HHBB',x) if x else None
+        
+    def print_laser_event(self):
+        e=self.get_laser_event()
+        if e:
+            pos,ebug_id,length,sensor_id=e
+            print '[%u] %3u: %5u - %5u (%u)'%(sensor_id,length,(pos-length)&0xffff,pos,ebug_id)
