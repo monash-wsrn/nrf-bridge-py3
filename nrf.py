@@ -157,7 +157,7 @@ class bridge:
             
             for i in range(9):
                 self.send_packet(chr(row)+chr(array+(i<<2))+data[i*30:(i+1)*30]) #header contains row, array, and seq numbers
-                #time.sleep(0.003) #sometimes delay is needed, sometimes not
+                time.sleep(0.003) #sometimes delay is needed, sometimes not
             print '%d/%d'%(n+1,len(h)-2),'\r',
             sys.stdout.flush()
         print
@@ -247,3 +247,12 @@ class bridge:
         if e:
             pos,ebug_id,length,sensor_id=e
             print '[%u] %3u: %5u - %5u (%u)'%(sensor_id,length,(pos-length)&0xffff,pos,ebug_id)
+    
+    def laser_motor_enable(self,enable_laser,enable_motor):
+        self.send_packet('\x81'+chr(enable_laser+(enable_motor<<1)))
+    
+    def set_laser_id(self,id_no):
+        self.send_packet('\x82'+struct.pack('<H',id_no))
+    
+    def set_laser_motor_speed(self,speed):
+        self.send_packet('\x83'+struct.pack('<B',speed))
