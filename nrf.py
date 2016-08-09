@@ -41,7 +41,8 @@ class bridge:
     def send_packet_check_response(self,packet):
         x=self.send_packet(packet)
         if x is None:
-            for i in range(5): #retry 5 times with dummy packet
+            for i in range(10): #retry 10 times with dummy packet
+                time.sleep(0.003)
                 x=self.send_packet('\x00')
                 if x is not None: break
             else: raise RuntimeError('No response')
@@ -256,3 +257,10 @@ class bridge:
     
     def set_laser_motor_speed(self,speed):
         self.send_packet('\x83'+struct.pack('<B',speed))
+    
+    def test_laser(self,clk_divider):
+        self.send_packet('\x84'+struct.pack('<B',clk_divider))
+    
+    def get_laser_motor_feedback(self):
+        x=self.send_packet_check_response('\x90')
+        return struct.unpack('<'+'I'*(len(x)/4),x) if x else None
