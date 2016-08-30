@@ -1,7 +1,18 @@
-1. "ebug-test.py": sets LED sequence for ebugs.
+Python Scripts:
+
+1. "camera.py" : ????
 2. "camera-test.py": wakes up the camera
-3. "clustering": used in "camera-test.py" for separate LEDs to different clusters (NN).
 4. "circle.py": used in "camera-test.py" for circle and ebug ID detection.
+3. "clustering": used in "camera-test.py" for separate LEDs to different clusters (NN).
+3. "discover.py: ????
+1. "ebug-test.py": sets LED sequence for ebugs.
+5. "flash.py": ????
+6. "nrf.py": ????
+
+Firmware:
+
+nrf-bridge.cydsn
+nrf-bridge.cywrk
 
 
 How to use:
