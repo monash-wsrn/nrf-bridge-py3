@@ -239,6 +239,9 @@ class bridge:
     def set_camera_thresholds(self,thresholds):
         self.send_packet('\x93'+struct.pack('<'+'B'*8,*thresholds))
     
+    def camera_write_reg(self,reg,value):
+	self.send_packet('\x91'+struct.pack('<BB',reg,value))
+        
     def get_laser_event(self):
         x=self.send_packet_check_response('\x80')
         return struct.unpack('<HHBB',x) if x else None
