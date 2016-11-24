@@ -89,6 +89,22 @@ class bridge:
     def calibrate_hall_sensors(self):
         self.send_packet('\x24')
     
+    def enable_motor_controller(self):
+        self.send_packet('\x25\x01')
+    
+    def disable_motor_controller(self):
+        self.send_packet('\x25\x00')
+    
+    def set_motor_controller_PID(self,P,I,D):
+        self.send_packet('\x25'+struct.pack('<hhh',P,I,D))
+    
+    def set_motor_controller_target(self,L,R):
+        self.send_packet('\x26'+struct.pack('<hh',L,R))
+    
+    def get_motor_speed(self):
+        x=self.send_packet_check_response('\x27')
+        return struct.unpack('<hh',x)
+    
     def enable_LEDs(self,side,top,centre_master,centre_slave):
         self.send_packet('\x30'+chr(side|(top<<1)|(centre_master<<2)|(centre_slave<<3)))
     
@@ -217,7 +233,7 @@ class bridge:
                             break
                         except: pass
                     else: n-=1
-                    
+        self.set_TX_address(n)
         return devices
 
     def flash_all_ebugs(self,filename,which=None):
