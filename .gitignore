@@ -12,3 +12,5 @@
 Backup/
 ComponentUpdateLog.txt
 *.pyc
+*~
+*.*~

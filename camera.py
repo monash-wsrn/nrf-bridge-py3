@@ -5,7 +5,7 @@ import cv2
 import math
 import time
 
-nrf=nrf.bridge()
+nrf=nrf.bridge('/dev/ttyACM1')#'/dev/ttyACM0'
 a=nrf.assign_addresses()
 for i in a.keys():
     nrf.set_TX_address(i)
@@ -50,7 +50,12 @@ while True:
         if ts!=prev_ts:
             img=np.zeros((480,640,3),np.uint8)
             for b in frame_blobs:
-                cv2.circle(img,(b[0]/2,b[1]/2),int(b[3]/math.pi**0.5/2),colours[b[2]],-1,cv2.CV_AA)
+		if b[2]==3:
+		  cv2.circle(img,(b[0]/2,b[1]/2),int(b[3]/math.pi**0.5/2),colours[2],-1,cv2.CV_AA)
+		else:
+		  cv2.circle(img,(b[0]/2,b[1]/2),int(b[3]/math.pi**0.5/2),colours[b[2]],-1,cv2.CV_AA)
+		#print 'x, y:',b[0]/2,b[1]/2 
+		print b[3]
             old_time=frame_times[0]
             new_time=(ts,time.time())
             frame_times=frame_times[1:]+[new_time]
