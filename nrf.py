@@ -95,8 +95,8 @@ class bridge:
     def disable_motor_controller(self):
         self.send_packet('\x25\x00')
     
-    def set_motor_controller_PID(self,P,I,D):
-        self.send_packet('\x25'+struct.pack('<hhh',P,I,D))
+    def set_motor_controller_PID(self,P_l,I_l,D_l,P_r,I_r,D_r):
+        self.send_packet('\x25'+struct.pack('<hhhhhh',P_l,I_l,D_l,P_r,I_r,D_r))
     
     def set_motor_controller_target(self,L,R):
         self.send_packet('\x26'+struct.pack('<hh',L,R))
