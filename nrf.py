@@ -5,6 +5,7 @@ import time
 import sys
 
 class bridge:
+    
     def __init__(self,device='/dev/ttyACM0'):
         subprocess.check_call(['stty','-F',device,'raw'])
         self.usb=serial.Serial(device,timeout=0.5)
