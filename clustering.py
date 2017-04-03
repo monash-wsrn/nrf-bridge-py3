@@ -1,9 +1,8 @@
 import numpy as np
 import scipy.sparse.csgraph
-import cv2
 
 
-def Clusters(LEDs, indices, colors, blob_sizes, img, show_neighbors):
+def Clusters(LEDs, indices, colors, blob_sizes):
     dist_sq = np.array([])
 
     for neigh in indices:
@@ -18,10 +17,6 @@ def Clusters(LEDs, indices, colors, blob_sizes, img, show_neighbors):
         neigh_index = i % 2 + 1
         if dist_sq[i] < mid * 2 and dist_sq[i] > mid * 0.5:
             LED_graph[indices[index][0]][indices[index][neigh_index]] = 1
-            if show_neighbors == False:
-                continue
-            cv2.line(img, tuple(LEDs[indices[index][0]]), tuple(LEDs[indices[index][neigh_index]]), [100, 100, 100])
-
     labels = scipy.sparse.csgraph.connected_components(LED_graph)
 
     cluster_nums = [i for i in range(labels[0])]
