@@ -1,11 +1,11 @@
 #!/usr/bin/python
-import nrf
+from nrf import Bridge
 import numpy as np
 import cv2
 import math
 import time
 
-nrf = nrf.bridge('/dev/ttyACM1')  # '/dev/ttyACM0'
+nrf = Bridge('/dev/ttyACM1')  # '/dev/ttyACM0'
 a = nrf.assign_addresses()
 for i in list(a.keys()):
     nrf.set_TX_address(i)

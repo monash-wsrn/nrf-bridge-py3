@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import nrf
+from nrf import Bridge
 from math import pi, sqrt
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
@@ -10,7 +10,7 @@ from time import time, sleep
 LED_DETECTION_THRESHOLD = 6
 
 def contact_camera():
-    nrf_bridge = nrf.bridge('/dev/ttyACM0')  # '/dev/ttyACM0'
+    nrf_bridge = Bridge('/dev/ttyACM0')  # '/dev/ttyACM0'
     a = nrf_bridge.assign_addresses()
     for i in list(a.keys()):
         nrf_bridge.set_TX_address(i)

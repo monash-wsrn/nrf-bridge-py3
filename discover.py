@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-import nrf
+from nrf import Bridge
 
-nrf=nrf.bridge()
+nrf=Bridge()
 ebugs=nrf.assign_addresses()
 
 for addr,psoc_id in ebugs.items():

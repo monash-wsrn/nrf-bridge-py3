@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import nrf
+from nrf import Bridge
 import numpy as np
 import cv2
 import math
@@ -14,7 +14,7 @@ SHOW_NEIGHBORS = True
 LED_DETECTION_THRESHOLD = 6
 ix, iy = -1, -1
 
-nrf = nrf.bridge('/dev/ttyACM1')  # '/dev/ttyACM0'
+nrf = Bridge('/dev/ttyACM0')  # '/dev/ttyACM1'
 a = nrf.assign_addresses()
 for i in list(a.keys()):
     nrf.set_TX_address(i)
@@ -81,11 +81,10 @@ while flg:
             img = np.zeros((480, 640, 3), np.uint8)
             for b in frame_blobs:
                 if b[2] == 3:
-                    cv2.circle(img, (b[0] / 2, b[1] / 2), int(b[3] / math.pi ** 0.5 / 2) * 2, colours[2], -1, cv2.CV_AA)
+                    cv2.circle(img, (b[0] // 2, b[1] // 2), int(b[3] / math.pi ** 0.5 / 2) * 2, colours[2], -1, cv2.LINE_AA)
                 else:
-                    cv2.circle(img, (b[0] / 2, b[1] / 2), int(b[3] / math.pi ** 0.5 / 2) * 2, colours[b[2]], -1,
-                               cv2.CV_AA)
-                LEDs_buf.append([b[0] / 2, b[1] / 2])
+                    cv2.circle(img, (b[0] // 2, b[1] // 2), int(b[3] / math.pi ** 0.5 / 2) * 2, colours[b[2]], -1, cv2.LINE_AA)
+                LEDs_buf.append([b[0] // 2, b[1] // 2])
                 color_buf.append(b[2])
                 blob_size_buf.append(int(b[3] / math.pi ** 0.5 / 2) * 2)
             # print 'x, y:',b[0]/2,b[1]/2
@@ -116,8 +115,7 @@ while flg:
                 nbrs = NearestNeighbors(n_neighbors=3, algorithm='kd_tree').fit(LEDs)
                 distances, indices = nbrs.kneighbors(LEDs)
 
-                valid_LEDs, color, blob_size, valid_cluster_index = CLTR.Clusters(LEDs, indices, color, blob_size, img,
-                                                                                  SHOW_NEIGHBORS)
+                valid_LEDs, color, blob_size, valid_cluster_index = CLTR.Clusters(LEDs, indices, color, blob_size)#, img, SHOW_NEIGHBORS)
                 # print valid_cluster_index
 
                 centers = []
@@ -169,8 +167,7 @@ while flg:
                     # cv2.circle(img,(centers[i][0],centers[i][1]),radius[i],[255,255,255],1)
                     # print len(LEDs_per_Ebug[i]),len(LEDColor_per_Ebug[i])
                     # print LEDColor_per_Ebug[i]
-                    color_seq, blob_seq = CL.GetSequence(LEDs_per_Ebug[i], LEDColor_per_Ebug[i], BlobSize_per_Ebug[i],
-                                                         centers[i], radius[i], 16)
+                    color_seq, blob_seq = CL.GetSequence(LEDs_per_Ebug[i], LEDColor_per_Ebug[i], BlobSize_per_Ebug[i], centers[i], radius[i], 16)
                     # print color_seq
                     # print '------------------------------------------------'
 
@@ -187,8 +184,8 @@ while flg:
             frame_times = frame_times[1:] + [new_time]
             fps_camera = 1000. * len(frame_times) / (new_time[0] - old_time[0])
             fps_local = len(frame_times) / (new_time[1] - old_time[1])
-            cv2.putText(img, '%03.0f' % fps_camera, (0, 20), cv2.FONT_HERSHEY_PLAIN, 1, (128, 128, 0), 1, cv2.CV_AA)
-            cv2.putText(img, '%03.0f' % fps_local, (0, 50), cv2.FONT_HERSHEY_PLAIN, 1, (128, 128, 0), 1, cv2.CV_AA)
+            cv2.putText(img, '%03.0f' % fps_camera, (0, 20), cv2.FONT_HERSHEY_PLAIN, 1, (128, 128, 0), 1, cv2.LINE_AA)
+            cv2.putText(img, '%03.0f' % fps_local, (0, 50), cv2.FONT_HERSHEY_PLAIN, 1, (128, 128, 0), 1, cv2.LINE_AA)
             cv2.imshow('Blob camera', img)
 
             frame_done = True

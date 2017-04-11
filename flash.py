@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import nrf
+from nrf import Bridge
 import sys
 
 if 'all' in sys.argv:
@@ -12,9 +12,9 @@ if len(sys.argv) < 2:
     raise RuntimeError('usage: %s master|slave|<filename> [all] [<serial port>]' % sys.argv[0])
 
 if len(sys.argv) < 3:
-    nrf = nrf.bridge()
+    nrf = Bridge()
 else:
-    nrf = nrf.bridge(sys.argv[2])
+    nrf = Bridge(sys.argv[2])
 
 master = '../ebug2014-firmware/eBug2014 Master.cydsn/CortexM3/ARM_GCC_493/Release/eBug2014 Master.cyacd'
 slave = '../ebug2014-firmware/eBug2014 Slave.cydsn/CortexM3/ARM_GCC_493/Release/eBug2014 Slave.cyacd'

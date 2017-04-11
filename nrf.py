@@ -4,7 +4,7 @@ import struct
 import time
 import sys
 
-class bridge:
+class Bridge:
     
     def __init__(self, device='/dev/ttyACM0'):
         subprocess.check_call(['stty', '-F', device, 'raw'])
