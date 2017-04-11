@@ -289,8 +289,8 @@ class bridge:
     
     def get_blobs(self):
         x = self.send_packet_check_response(b'\x90')
-        n = len(x)/4
-        z = struct.unpack('<' + 'I' * n,x)
+        n = len(x)//4
+        z = struct.unpack(b'<' + b'I' * n,x)
         unpack = lambda i: tuple(i >> offset & (1 << length) - 1 for offset,length in [(0, 11), (11, 11), (22, 2), (24, 8)])
         return z[0], [unpack(i) for i in z[1:]]
     
