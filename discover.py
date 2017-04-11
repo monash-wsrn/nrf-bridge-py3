@@ -5,7 +5,6 @@ import nrf
 nrf=nrf.bridge()
 ebugs=nrf.assign_addresses()
 
-for i,j in ebugs.items():
-    print (i, j)
-    nrf.set_TX_address(i)
-    nrf.print_bot(repr(j))
+for addr,psoc_id in ebugs.items():
+    nrf.set_TX_address(addr)
+    nrf.print_bot('-'.join(str(element) for element in psoc_id))

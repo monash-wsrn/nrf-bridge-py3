@@ -260,7 +260,23 @@ class bridge:
                             pass
                     else: n -= 1
         self.set_TX_address(n)
+        self.display_devices(devices)
         return devices
+
+    def display_devices(self, devices):
+        print('Addr\tPSoC ID             \tType')
+        print('----\t--------------------\t----------')
+        for addr, psoc_id in devices.items():
+            self.set_TX_address(addr)
+            device_strings = ['eBug', 'camera']
+            device_type = self.get_ID_type()[-1]
+            print(
+                addr,
+                '\t',
+                '-'.join([str(element) for element in psoc_id]),
+                '\t',
+                '%s (%s)' % (device_strings[device_type], device_type)
+            )
 
     def flash_all_ebugs(self, filename, which=None):
         for i,j in self.assign_addresses().items():
