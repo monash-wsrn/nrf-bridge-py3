@@ -1,7 +1,11 @@
 #!/usr/bin/python
 import sys
+
 from PyQt4.QtGui import *
 from PyQt4.QtCore import QTimer
+
+from nrf import Bridge
+
 
 app = QApplication(sys.argv)
 win = QWidget()
@@ -75,10 +79,10 @@ def update():
 timer = QTimer()
 timer.timeout.connect(update)
 timer.start(10)
+                        
 
-import nrf
 
-n = nrf.bridge()
+n = Bridge()
 if n.assign_addresses():
     win.show()
     sys.exit(app.exec_())

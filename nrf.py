@@ -1,8 +1,7 @@
+import pickle, re, struct, subprocess, sys, time
+
 import serial
-import subprocess
-import struct
-import time
-import sys
+
 
 class Bridge:
     
@@ -188,16 +187,16 @@ class Bridge:
         for n,line in enumerate(h[1:-1]): #first line is header; last line is metadata (which we ignore)
             array = int(line[1:3], 16) #array number
             row = int(line[3:7], 16)   #row number
-            data = [chr(int(line[11 + 2 * i:13 + 2 * i], 16)) for i in range(256)] #256 data bytes for each row
-            data = ''.join(data)
-            data += '\0' * 14 #add 14 bytes to make 9 packets of 30 bytes
+            data = [bytes([int(line[11 + 2 * i:13 + 2 * i], 16)]) for i in range(256)] #256 data bytes for each row
+            data = b''.join(data)
+            data += b'\x00' * 14 #add 14 bytes to make 9 packets of 30 bytes
             
             for i in range(9):
-                self.send_packet(chr(row) + chr(array + (i << 2)) + data[i * 30:(i + 1) * 30]) #header contains row, array, and seq numbers
+                self.send_packet(bytes([row]) + bytes([array + (i << 2)]) + data[i * 30:(i + 1) * 30]) #header contains row, array, and seq numbers
                 time.sleep(0.003) #sometimes delay is needed, sometimes not
             print ('%d/%d' % (n + 1, len(h) - 2), '\r', sys.stdout.flush())
         print()
-        self.send_packet('\xff' * 32) #reset to loaded app
+        self.send_packet(b'\xff' * 32) #reset to loaded app
         time.sleep(0.3)
     
     def neighbour_discovery(self, index=0, only_new=False):
@@ -238,28 +237,46 @@ class Bridge:
             self.send_packet(b'\xb3')
     
     def assign_addresses(self):
+        eBugs_pairing_list = dict()
+        try:
+            with open('eBugs_pairing_list.txt','rb') as saved_macaddresses_file:
+                eBugs_pairing_list = pickle.load(saved_macaddresses_file)
+        except FileNotFoundError:
+            pass
+
         self.forget_unicast_address() #everyone should forget their current addresses
         #TODO this is not ACKed, so some may still have an address assigned
         #TODO instead, we can send a forget_unicast_address to each of the 254 possible addresses (takes about 8ms for each address if no one is listening)
         #TODO alternative: use a `session ID' and include in ND request and the set address request. Nodes set their own session ID when setting their address and only respond to ND requests if session ID differs.
         devices = {}
-        n = 0
         for j in range(3): #repeat a few times in case of collisions
             for i in range(7):
                 neighbours = self.neighbour_discovery(i,True) #find all neighbours that haven't been assigned an address
                 for x in neighbours:
-                    n += 1
-                    for t in range(10):
-                        try:
-                            self.set_unicast_address(x,n)
-                            self.set_TX_address(n)
-                            self.send_packet(b'\x00')
-                            devices[n] = x
-                            break
-                        except:
-                            pass
-                    else: n -= 1
-        self.set_TX_address(n)
+                    if x in eBugs_pairing_list:
+                        for t in range(10):
+                            try:
+                                self.set_unicast_address(x, eBugs_pairing_list[x])
+                                self.set_TX_address(eBugs_pairing_list[x])
+                                self.send_packet(b'\x00')
+                                devices[eBugs_pairing_list[x]] = x
+                                break
+                            except:
+                                pass
+                    else:
+                        while True:
+                            response = input('Device %s is unknown. Assign it a number : ' % str(x))
+                            if re.match(r'\d{1,3}',response) and int(response) not in eBugs_pairing_list.values():
+                                break
+                            else:
+                                print('This number is already assigned.')
+                        eBugs_pairing_list[x] = int(response)
+
+        self.set_TX_address(eBugs_pairing_list[x])
+
+        with open('eBugs_pairing_list.txt','wb') as saved_macaddresses_file:
+            pickle.dump(eBugs_pairing_list, saved_macaddresses_file)
+
         self.display_devices(devices)
         return devices
 
