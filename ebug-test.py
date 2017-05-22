@@ -1,7 +1,4 @@
-import nrf
-import numpy as np
-import cv2
-import math
+from nrf import Bridge
 import time
 from random import randint
 
@@ -22,7 +19,7 @@ LED_list = [[0x1a02,0x2091,0xc56c],
 	    [0x83d9,0x3406,0x4820]]
 
 
-n=nrf.bridge('/dev/ttyACM1')#'/dev/ttyACM0'
+n=Bridge('/dev/ttyACM0')#'/dev/ttyACM0'
 a=n.assign_addresses()
 ID = 0
 for i in a.keys():
@@ -37,7 +34,7 @@ for i in a.keys():
     #    camera_address=i
     
     #    break
-else: raise RuntimeError('No ebugs found')
+#else: raise RuntimeError('No ebugs found')
 
 
 
