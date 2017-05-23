@@ -1,11 +1,11 @@
-import pickle, re, struct, subprocess, sys, time
+import codecs, json, re, struct, subprocess, sys, time
 
 import serial
 
 
 class Bridge:
     
-    def __init__(self, device='/dev/ttyACM0'):
+    def __init__(self, device='/dev/ttyACM1'):
         subprocess.check_call(['stty', '-F', device, 'raw'])
         self.usb=serial.Serial(device, timeout = 0.5)
     
@@ -125,7 +125,7 @@ class Bridge:
         )
     
     def set_LEDs(self, red, green, blue):
-        self.send_packet(b'\x31' + struct.pack('<HHH',red,green,blue))
+        self.send_packet(b'\x31' + struct.pack('<HHH',int(red, 16), int(green, 16), int(blue, 16)))
     
     def LED_brightness(self, brightness):
         self.send_packet(b'\x32' + bytes([brightness]))
@@ -235,14 +235,26 @@ class Bridge:
             self.send_multicast(b'\xb3')
         else:
             self.send_packet(b'\xb3')
-    
+
+    def load_device_info_from_file(self, file):
+        with open(file,'r') as saved_device_info_file:
+            device_pairing_list = json.load(saved_device_info_file)
+
+        device_pairing_list = {int(key): value for key, value in device_pairing_list.items()}
+        for device in device_pairing_list:
+            if device_pairing_list[device].get('led_sequence'):
+                device_pairing_list[device]['led_sequence'] = [codecs.encode(value) for value in device_pairing_list[device]['led_sequence']]
+            device_pairing_list[device]['psoc_id'] = tuple(device_pairing_list[device]['psoc_id'])
+        return device_pairing_list
+
     def assign_addresses(self):
-        eBugs_pairing_list = dict()
-        try:
-            with open('eBugs_pairing_list.txt','rb') as saved_macaddresses_file:
-                eBugs_pairing_list = pickle.load(saved_macaddresses_file)
-        except FileNotFoundError:
-            pass
+        self.unknown = set()
+        self.camera = dict()
+        self.eBug = dict()
+
+        eBugs_pairing_list = self.load_device_info_from_file('eBugs_pairing_list.txt')
+
+        eBugs_psoc_id_list = {value['psoc_id']: key for key, value in eBugs_pairing_list.items()}
 
         self.forget_unicast_address() #everyone should forget their current addresses
         #TODO this is not ACKed, so some may still have an address assigned
@@ -253,46 +265,53 @@ class Bridge:
             for i in range(7):
                 neighbours = self.neighbour_discovery(i,True) #find all neighbours that haven't been assigned an address
                 for x in neighbours:
-                    if x in eBugs_pairing_list:
+                    if x in eBugs_psoc_id_list:
                         for t in range(10):
                             try:
-                                self.set_unicast_address(x, eBugs_pairing_list[x])
-                                self.set_TX_address(eBugs_pairing_list[x])
+                                address = eBugs_psoc_id_list[x]
+                                self.set_unicast_address(x, address)
+                                self.set_TX_address(address)
                                 self.send_packet(b'\x00')
-                                devices[eBugs_pairing_list[x]] = x
+                                if(eBugs_pairing_list[address]['type'] == 1):
+                                    self.camera[address] = eBugs_pairing_list[address]
+                                else:
+                                    self.eBug[address] = eBugs_pairing_list[address]
                                 break
                             except:
                                 pass
                     else:
-                        while True:
-                            response = input('Device %s is unknown. Assign it a number : ' % str(x))
-                            if re.match(r'\d{1,3}',response) and int(response) not in eBugs_pairing_list.values():
-                                break
-                            else:
-                                print('This number is already assigned.')
-                        eBugs_pairing_list[x] = int(response)
+                        self.unknown.add(x)
 
-        self.set_TX_address(eBugs_pairing_list[x])
+        self.display_devices()
+        return self.camera, self.eBug, self.unknown
 
-        with open('eBugs_pairing_list.txt','wb') as saved_macaddresses_file:
-            pickle.dump(eBugs_pairing_list, saved_macaddresses_file)
-
-        self.display_devices(devices)
-        return devices
-
-    def display_devices(self, devices):
-        print('Addr\tPSoC ID             \tType')
-        print('----\t--------------------\t----------')
-        for addr, psoc_id in devices.items():
-            self.set_TX_address(addr)
-            device_strings = ['eBug', 'camera']
-            device_type = self.get_ID_type()[-1]
+    def display_devices(self):
+        print('Addr\tPSoC ID             \tType       \tLed Sequence')
+        print('----\t--------------------\t-----------\t----------------------------------')
+        for addr, info in self.camera.items():
             print(
                 addr,
                 '\t',
+                '-'.join([str(element) for element in info['psoc_id']]),
+                '\t',
+                'camera (0)'
+            )
+        for addr, info in self.eBug.items():
+            print(
+                addr,
+                '\t',
+                '-'.join([str(element) for element in info['psoc_id']]),
+                '\t',
+                'eBug (1)',
+                '\t',
+                str(info['led_sequence'])
+            )
+        for psoc_id in self.unknown:
+            print(
+                '\t',
                 '-'.join([str(element) for element in psoc_id]),
                 '\t',
-                '%s (%s)' % (device_strings[device_type], device_type)
+                'UNKNOWN',
             )
 
     def flash_all_ebugs(self, filename, which=None):
