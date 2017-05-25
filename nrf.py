@@ -10,6 +10,12 @@ class Bridge:
         self.usb=serial.Serial(device, timeout = 0.5)
     
     def send_packet(self,packet):
+        """
+        Sends a raw packet to the wireless interface, uses the last address
+        set. It raises an error if does not receive an ack. 
+
+        Returns the payload of the response packet.
+        """
         self.usb.write(b'\x00' + packet)
         self.usb.flush()
         n = ord(self.usb.read(1))
@@ -28,6 +34,9 @@ class Bridge:
             return self.usb.read(n)
 
     def set_TX_address(self, address):
+        """
+        Give a number or a 3-byte string.
+        """
         if not isinstance(address, bytes):
             address = bytes([address]) + b'\x21\xc8'
         self.usb.write(b'\x01' + address)
@@ -39,6 +48,9 @@ class Bridge:
             return self.usb.read(n)
 
     def set_RX_address(self, address):
+        """
+        Used only during the neighbour discovery. 
+        """
         self.usb.write(b'\x02' + address)
         self.usb.flush()
         n = ord(self.usb.read(1))
@@ -48,6 +60,9 @@ class Bridge:
             return self.usb.read(n)
 
     def send_packet_check_response(self, packet):
+        """ 
+        A convenience packet. 
+        """
         x = self.send_packet(packet)
         if x is None:
             for i in range(10): #retry 10 times with dummy packet
@@ -100,6 +115,9 @@ class Bridge:
         self.send_packet(b'\x21' + struct.pack('<BB', (current > 0) << 1 | enable, abs(current)))
     
     def get_motor_turn_counts(self, reset=False):
+        """
+        Gives us two signed 16-bit integers. 
+        """
         x = self.send_packet_check_response(b'\x22' if reset else b'\x23')
         return struct.unpack('<hh', x)
     
@@ -134,16 +152,25 @@ class Bridge:
         self.send_packet(b'\x32' + bytes([brightness]))
     
     def get_bump_sensors(self):
+        """
+        Gives us 6 boolean values.
+        """
         x = self.send_packet_check_response(b'\x40')
         x = ord(x)
         return tuple(bool(x & (1 << i)) for i in range(6))
     
     def get_touch_buttons(self):
+        """
+        Gives us 2 boolean values.
+        """
         x = self.send_packet_check_response(b'\x41')
         x = ord(x)
         return tuple(bool(x & (1 << i)) for i in range(2))
         
     def get_light_sensors(self):
+        """
+        Gives us 16 12-bit unsigned values. 
+        """
         x = self.send_packet_check_response(b'\x50')
         LS = []
         for i in range(8):
@@ -153,10 +180,19 @@ class Bridge:
         return LS
     
     def get_power_values(self):
+        """
+        Gives us battery voltage level (mV), current draw (mA), 
+        charge current (mA, current flowing in through the USB connection),
+        and temperature (C).
+        """
         x = self.send_packet_check_response(b'\x60')
         return struct.unpack('<iiih', x)
     
     def calibrate_power_ADC(self):
+        """
+        Do this once. Call it when powered through the USB connection and 
+        battery taken out. 
+        """
         self.send_packet(b'\x61')
     
     def increase_charge_current(self, current):
@@ -165,12 +201,21 @@ class Bridge:
         self.send_packet(b'\x62' + bytes([int(current / 8 * 1000)]))
     
     def forget_unicast_address(self):
+        """
+        Mostly used by address assignment.
+        """
         self.send_packet(b'\xb3')
     
     def reset(self, bootloader=False):
+        """
+        reset or reset to bootloader.
+        """
         self.send_packet(b'\xff' if bootloader else b'\xfe')
 
     def flash(self, filename, which=None):
+        """
+        Flash a new firmware. eBug needs to be in the bootloader mode.
+        """
         with open(filename) as f:
             h = f.readlines() #read in .cyacd file
         
@@ -203,6 +248,10 @@ class Bridge:
         time.sleep(0.3)
     
     def neighbour_discovery(self, index=0, only_new=False):
+        """
+        Usually we don't use this function directly. We use "assign_addresses()"
+        instead. 
+        """
         self.set_TX_address(0xff)
         self.set_RX_address(b'\x00\x21\xc8')
         self.usb.write((b'\xb0' if only_new else b'\xb1') + bytes([index]))
@@ -227,6 +276,9 @@ class Bridge:
         return responses
     
     def set_unicast_address(self, serial, address):
+        """
+        We don't use this directly. 
+        """
         self.set_TX_address(0xff)
         if type(serial) is not str: serial = struct.pack('<BBBHBB',*serial)
         if type(address) is not str: address = bytes([address])
@@ -318,6 +370,9 @@ class Bridge:
             )
 
     def flash_all_ebugs(self, filename, which=None):
+        """
+        Used by flash.py
+        """
         for i,j in self.assign_addresses().items():
             self.set_TX_address(i)
             if self.get_ID_type()[6] == 0: #only flash eBugs (not cameras)
@@ -327,6 +382,18 @@ class Bridge:
                 self.flash(filename,which)
     
     def get_blobs(self):
+        """
+        We keep calling this. Look at camera.py for usage.
+
+        Each blob is packed into 32-bits  - x, y, color, size 
+        size: square root of the blob.
+        double resolution (half pixels)
+
+        We get up to 6 blobs per packet. 
+
+        Timestamps are in miliseconds since the start of the
+        program (32 bits long)
+        """
         x = self.send_packet_check_response(b'\x90')
         n = len(x)//4
         z = struct.unpack(b'<' + b'I' * n,x)
@@ -334,6 +401,9 @@ class Bridge:
         return z[0], [unpack(i) for i in z[1:]]
     
     def set_camera_thresholds(self, thresholds):
+        """
+        When we adjust the sliders, it sends this. 
+        """
         self.send_packet(b'\x93' + struct.pack('<' + 'B' * 8, *thresholds))
     
     def camera_write_reg(self, reg, value):
