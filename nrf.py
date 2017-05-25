@@ -80,6 +80,9 @@ class Bridge:
     
     def LCD_backlight(self, enable):
         self.send_packet(b'\x12' + bytes([enable]))
+        
+    def LCD_contrast(self, contrast): #set contrast (range is 0--100)
+        self.send_packet(b'\x13' + bytes([contrast]))
     
     def motor_control(self, speed_L, speed_R, decay_mode_L, decay_mode_R=None):
         if decay_mode_R is None:
