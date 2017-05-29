@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from nrf import Bridge
+from libraries.nrf import Bridge
 import sys
 
 if 'all' in sys.argv:

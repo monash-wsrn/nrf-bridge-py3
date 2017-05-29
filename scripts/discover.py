@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from nrf import Bridge
+from libraries.nrf import Bridge
 
 nrf=Bridge()
 camera, eBugs, unknown = nrf.assign_static_addresses()

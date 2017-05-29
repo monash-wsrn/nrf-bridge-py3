@@ -1,14 +1,14 @@
 #!/usr/bin/python
-from nrf import Bridge
+from libraries.nrf import Bridge
 import numpy as np
 import cv2
 import math
 import time
 from sklearn.neighbors import NearestNeighbors
-import scipy.sparse.csgraph
+# import scipy.sparse.csgraph
 
-import circle as CL
-import clustering as CLTR
+import libraries.circle as CL
+import libraries.clustering as CLTR
 
 SHOW_NEIGHBORS = True
 LED_DETECTION_THRESHOLD = 6
