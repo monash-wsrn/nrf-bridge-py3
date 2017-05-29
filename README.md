@@ -37,3 +37,10 @@ of LEDs on each ebug to be matched.
 
 * I only draw a circle on ebug when its LED sequence is recognized.
 
+#Architecture
+The code is divided in 5 parts.
+* libraries : Contains every libraries used by the scripts
+* client : Contains the web JS application used to display robots.
+* server : Contains the part that transmit data from camera to client
+* scripts : Contains every scripts used to directly communicate to robots or camera
+* nrf-bridge.cydsn : Contains every files related to the firmware

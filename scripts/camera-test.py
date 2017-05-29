@@ -81,9 +81,11 @@ while flg:
             img = np.zeros((480, 640, 3), np.uint8)
             for b in frame_blobs:
                 if b[2] == 3:
-                    cv2.circle(img, (b[0] // 2, b[1] // 2), int(b[3] / math.pi ** 0.5 / 2) * 2, colours[2], -1, cv2.LINE_AA)
+                    cv2.circle(img, (b[0] // 2, b[1] // 2), int(b[3] / math.pi ** 0.5 / 2) * 2, colours[2], -1,
+                               cv2.LINE_AA)
                 else:
-                    cv2.circle(img, (b[0] // 2, b[1] // 2), int(b[3] / math.pi ** 0.5 / 2) * 2, colours[b[2]], -1, cv2.LINE_AA)
+                    cv2.circle(img, (b[0] // 2, b[1] // 2), int(b[3] / math.pi ** 0.5 / 2) * 2, colours[b[2]], -1,
+                               cv2.LINE_AA)
                 LEDs_buf.append([b[0] // 2, b[1] // 2])
                 color_buf.append(b[2])
                 blob_size_buf.append(int(b[3] / math.pi ** 0.5 / 2) * 2)
@@ -115,7 +117,8 @@ while flg:
                 nbrs = NearestNeighbors(n_neighbors=3, algorithm='kd_tree').fit(LEDs)
                 distances, indices = nbrs.kneighbors(LEDs)
 
-                valid_LEDs, color, blob_size, valid_cluster_index = CLTR.Clusters(LEDs, indices, color, blob_size)#, img, SHOW_NEIGHBORS)
+                valid_LEDs, color, blob_size, valid_cluster_index = CLTR.Clusters(LEDs, indices, color,
+                                                                                  blob_size)  # , img, SHOW_NEIGHBORS)
                 # print valid_cluster_index
 
                 centers = []
@@ -167,7 +170,8 @@ while flg:
                     # cv2.circle(img,(centers[i][0],centers[i][1]),radius[i],[255,255,255],1)
                     # print len(LEDs_per_Ebug[i]),len(LEDColor_per_Ebug[i])
                     # print LEDColor_per_Ebug[i]
-                    color_seq, blob_seq = CL.GetSequence(LEDs_per_Ebug[i], LEDColor_per_Ebug[i], BlobSize_per_Ebug[i], centers[i], radius[i], 16)
+                    color_seq, blob_seq = CL.GetSequence(LEDs_per_Ebug[i], LEDColor_per_Ebug[i], BlobSize_per_Ebug[i],
+                                                         centers[i], radius[i], 16)
                     # print color_seq
                     # print '------------------------------------------------'
 
