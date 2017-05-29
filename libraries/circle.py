@@ -91,7 +91,6 @@ def EbugIdDtection(color_seq, thres):
     buf = [(k, j) for k, j in enumerate(vote) if j > 0]
     # if len(buf) == 1:
     #  return buf[0]
-    # print vote
     if max(vote) > 0:
         return vote.index(max(vote))
     else:
