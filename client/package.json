@@ -1,0 +1,42 @@
+{
+  "name": "ebug-swarm",
+  "version": "0.0.0",
+  "description": "Visualisation of a group of robots through a webApp",
+  "authors": [
+    {
+      "name": "Tanguy Le Floch",
+      "email": "lefloch.ta@gmail.com"
+    },
+    {
+      "name": "Gautier Barbereau",
+      "email": "gautier.barbereau@gmail.com"
+    }
+  ],
+  "scripts": {
+    "start": "webpack-dev-server",
+    "build": "webpack --config webpack.prod.config"
+  },
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/monash-wsrn/nrf-bridge.git"
+  },
+  "dependencies": {
+    "p5": "^0.5.7",
+    "p5.gibber.js": "^0.2.3",
+    "rainbowvis.js": "^1.0.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.0",
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.4.0",
+    "babel-preset-es2015": "^6.22.0",
+    "babelify": "^7.3.0",
+    "browserify": "^14.1.0",
+    "require": "^2.4.20",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "webpack": "^2.0.0",
+    "webpack-dev-server": "^2.4.1"
+  },
+  "license": "ECL-1.0"
+}
