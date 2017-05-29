@@ -1,4 +1,4 @@
-from nrf import Bridge
+from libraries.nrf import Bridge
 import time
 from random import randint
 

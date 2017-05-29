@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from nrf import Bridge
+from libraries.nrf import Bridge
 import numpy as np
 import cv2
 import math
