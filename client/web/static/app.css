@@ -1,0 +1,48 @@
+/* app.css */
+
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+.app {
+    width: 100%;
+    height: calc(100% - 80px);
+}
+
+.appCanvas {
+    width: 80%;
+    position: relative;
+    float: left;
+    height: 100%;
+}
+
+.optionsDiv {
+    width: 20%;
+    position: relative;
+    float: left;
+    height: 100%;
+}
+
+.title {
+    margin-top: 0;
+    padding-top: 22px;
+}
+
+.button {
+    margin: 5px;
+}
+
+.button1 {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#fceabb+0,fccd4d+50,f8b500+54,fbdf93+100 */
+    background: #fceabb; /* Old browsers */
+    background: -moz-linear-gradient(top,  #fceabb 0%, #fccd4d 50%, #f8b500 54%, #fbdf93 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top,  #fceabb 0%,#fccd4d 50%,#f8b500 54%,#fbdf93 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom,  #fceabb 0%,#fccd4d 50%,#f8b500 54%,#fbdf93 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', endColorstr='#fbdf93',GradientType=0 ); /* IE6-9 */
+}
+
+.button2 {
+    color : blue;
+}
