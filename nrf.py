@@ -5,7 +5,7 @@ import serial
 
 class Bridge:
     
-    def __init__(self, device='/dev/ttyACM1'):
+    def __init__(self, device='/dev/ttyACM0'):
         subprocess.check_call(['stty', '-F', device, 'raw'])
         self.usb=serial.Serial(device, timeout = 0.5)
     
