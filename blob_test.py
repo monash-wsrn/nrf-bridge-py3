@@ -10,6 +10,7 @@ from nrf import Bridge
 import time
 import sys
 import threading
+from multiprocessing import Process
 
 nrf = Bridge()
 nrf.assign_static_addresses()
@@ -62,17 +63,60 @@ def record(seconds, file):
                 saving_file.write('-------------------------Blob Error--------------------------\n')
             end = time.time()
         
-def get_frame():
+def get_single_frame(first_blob = None):
+    #import ipdb
+    #ipdb.set_trace()
     timestamp = set()
     frame = []
+    last_blob = None
+
     while True:
-        blob = nrf.get_blobs()
+        try:
+            blob = nrf.get_blobs()
+        except RuntimeError:
+            continue
+        print(blob)
         timestamp.add(blob[0])
-        if not blob[1] or len(timestamp) > 1:
+        if not blob[1]:
             break
+        if len(timestamp) > 1:
+            last_blob = blob
+            break
+
         frame.append(blob[1])
-    return frame
+
+    timestamp = sorted(timestamp)[0]
+    if first_blob and first_blob[0] == timestamp:
+        frame.append(first_blob[1])
+    return (timestamp, frame), last_blob
+
+
+def write_in_file(file, frame):
+    with open(file,'a+') as saving_file: 
+        saving_file.write(str(frame) + '\n')
+
 
 def blob_timer():
-    threading.Timer(0.033333333333, blob_timer).start()
-    print(get_frame())
+    time.sleep(1)
+
+def frame_treatment(frame):
+    if frame[1]:
+        #write_in_file('test.txt',time.time())
+        write_in_file('test.txt', frame[0])
+
+
+def get_frames():
+    next_blob = None
+    while(True):
+        try:
+            timer = Process(target = blob_timer)
+            timer.start()
+            frame, next_blob = get_single_frame(next_blob)
+            Process(target = frame_treatment, args=(frame,)).start()
+            timer.join()
+            if next_blob:
+                print('frame was full')
+        except KeyboardInterrupt:
+            break
+
+
