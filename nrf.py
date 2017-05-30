@@ -121,8 +121,12 @@ class Bridge:
         x = self.send_packet_check_response(b'\x22' if reset else b'\x23')
         return struct.unpack('<hh', x)
     
-    def calibrate_hall_sensors(self):
-        self.send_packet(b'\x24')
+    def calibrate_hall_sensors(self, hysteresis=20): #hysteresis in steps of 1.25mV -- default is +/-25mV
+        """
+        Do this once (results stored in EEPROM). Call it with the magnet holders removed.
+        Decrease hysteresis for more sensitivity, increase for more noise immunity.
+        """
+        self.send_packet(b'\x24' + bytes([hysteresis]))
     
     def enable_motor_controller(self):
         self.send_packet(b'\x25\x01')
