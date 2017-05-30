@@ -3,8 +3,8 @@ import time
 from random import randint
 
 
-nrf = Bridge('/dev/ttyACM1')#'/dev/ttyACM0'
-camera, eBugs, unknown = nrf.assign_addresses()
+nrf = Bridge('/dev/ttyACM0')#'/dev/ttyACM1'
+camera, eBugs, unknown = nrf.assign_static_addresses()
 
 ID = 0
 for address, info in eBugs.items():
