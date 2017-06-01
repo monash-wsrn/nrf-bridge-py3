@@ -306,20 +306,21 @@ class Bridge:
             device_pairing_list[device]['psoc_id'] = tuple(device_pairing_list[device]['psoc_id'])
         return device_pairing_list
 
-    def assign_addresses(self):
+    def assign_static_addresses(self, path = 'eBugs_pairing_list.json'):
+        '''
+        consults a table to always assign the same 1-byte address and RGB led sequence to the same eBug
+        returns the information on every conected devices : cameras, eBugs and unknown devices
+        Ex : camera, eBug, unknown = nrf.assign_static_addresses('../nrf-bridge/eBugs_pairing_list.json')
+        '''
         self.unknown = set()
         self.camera = dict()
         self.eBug = dict()
 
-        eBugs_pairing_list = self.load_device_info_from_file('eBugs_pairing_list.txt')
+        eBugs_pairing_list = self.load_device_info_from_file(path)
 
         eBugs_psoc_id_list = {value['psoc_id']: key for key, value in eBugs_pairing_list.items()}
 
         self.forget_unicast_address() #everyone should forget their current addresses
-        #TODO this is not ACKed, so some may still have an address assigned
-        #TODO instead, we can send a forget_unicast_address to each of the 254 possible addresses (takes about 8ms for each address if no one is listening)
-        #TODO alternative: use a `session ID' and include in ND request and the set address request. Nodes set their own session ID when setting their address and only respond to ND requests if session ID differs.
-        devices = {}
         for j in range(3): #repeat a few times in case of collisions
             for i in range(7):
                 neighbours = self.neighbour_discovery(i,True) #find all neighbours that haven't been assigned an address
@@ -343,6 +344,29 @@ class Bridge:
 
         self.display_devices()
         return self.camera, self.eBug, self.unknown
+
+    def assign_addresses(self):
+        self.forget_unicast_address() #everyone should forget their current addresses
+        #TODO this is not ACKed, so some may still have an address assigned
+        #TODO instead, we can send a forget_unicast_address to each of the 254 possible addresses (takes about 8ms for each address if no one is listening)
+        #TODO alternative: use a `session ID' and include in ND request and the set address request. Nodes set their own session ID when setting their address and only respond to ND requests if session ID differs.
+        devices={}
+        n=0
+        for j in range(3): #repeat a few times in case of collisions
+            for i in range(7):
+                neighbours=self.neighbour_discovery(i,True) #find all neighbours that haven't been assigned an address
+                for x in neighbours:
+                    n+=1
+                    for t in range(10):
+                        try:
+                            self.set_unicast_address(x,n)
+                            self.set_TX_address(n)
+                            self.send_packet('\x00')
+                            devices[n]=x
+                            break
+                        except: pass
+                    else: n-=1
+        return devices
 
     def display_devices(self):
         print('Addr\tPSoC ID             \tType       \tLed Sequence')
