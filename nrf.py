@@ -361,7 +361,7 @@ class Bridge:
                         try:
                             self.set_unicast_address(x,n)
                             self.set_TX_address(n)
-                            self.send_packet('\x00')
+                            self.send_packet(b'\x00')
                             devices[n]=x
                             break
                         except: pass
