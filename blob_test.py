@@ -119,4 +119,41 @@ def get_frames():
         except KeyboardInterrupt:
             break
 
+def new_test():
+    frame = []
+    i = 1
+    #discard buffer by calling get_blobs() until we get an empty packet
+    while 1:
+        try:
+            blob = nrf.get_blobs()
+        except RuntimeError:
+            break
 
+    time_0 = time.time()
+    blob = nrf.get_blobs()
+    time_1 = time.time()
+    RTT = time_1 - time_0 #depends of the size of the blob
+    camera_time_0 = camera_time = blob[0]
+
+    print("RTT : %f, Camera Timestamp : %d ms, Blob info : %s\n" % (RTT, camera_time - camera_time_0, str(blob[1])) )
+
+    while 1:
+        try:
+            time_1 = time.time()
+            try:
+                blob = nrf.get_blobs()
+            except RuntimeError as error:
+                print("RunTime Error : %s \n" % error)
+                continue
+            if camera_time != blob[0]:
+                print("FRAME #%d : %s\n" % (i, str(frame)))
+                i += 1
+                frame = []
+            if blob[1]:
+                frame.append(blob[1])
+            camera_time = blob[0]
+            time_2 = time.time()
+            RTT = time_2 - time_1 #depends of the size of the blob
+            print("RTT : %f, Camera Timestamp : %d ms, Blob info : %s\n" % (RTT, camera_time - camera_time_0, str(blob[1])) )
+        except KeyboardInterrupt:
+            break

@@ -56,7 +56,7 @@ class Bridge:
                 if x:
                     break
             else:
-                raise RuntimeError('No response')
+                raise RuntimeError('No Response')
         if x[0] != packet[0]:
             raise RuntimeError('Unexpected response: %s'%repr(list(bytearray(x))))
         return x[1:]
