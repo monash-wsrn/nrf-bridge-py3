@@ -412,6 +412,9 @@ class Bridge:
     def get_blobs(self):
         """
         We keep calling this. Look at camera.py for usage.
+        
+        Camera firmware processes a frame, records the blobs into points[256]
+        array. Each element of the array is a "blob". 
 
         Each blob is packed into 32-bits  - x, y, color, size 
         size: square root of the blob.
@@ -421,6 +424,13 @@ class Bridge:
 
         Timestamps are in miliseconds since the start of the
         program (32 bits long)
+
+        The points[] array only gets updated when all the blobs have
+        been read out. If you don't request all of them in time, then
+        the next frame will be discarded. This way you only get a
+        complete frame's worth of blobs at a time. Each packet is
+        timestamped with the frame it corresponds to so you can tell
+        when you've missed a frame.
         """
         x = self.send_packet_check_response(b'\x90')
         n = len(x)//4
