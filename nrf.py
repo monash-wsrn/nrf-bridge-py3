@@ -370,7 +370,7 @@ class Bridge:
 
     def display_devices(self):
         print('Addr\tPSoC ID             \tType       \tLED Sequence')
-        print('----\t--------------------\t-----------\t----------------------------------')
+        print('----\t--------------------\t-----------\t-------------------------------')
         for addr, info in self.camera.items():
             print(
                 addr,
