@@ -15,7 +15,7 @@ LED_DETECTION_THRESHOLD = 6
 ix, iy = -1, -1
 
 nrf = Bridge('/dev/ttyACM0')  # '/dev/ttyACM1'
-a = nrf.assign_addresses()
+a = nrf.assign_static_addresses(path='../libraries/eBugs_pairing_list.json')
 for i in list(a.keys()):
     nrf.set_TX_address(i)
     if nrf.get_ID_type()[6] == 1:  # find first camera in neighbours

@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-import argparse
+import os, sys, argparse
+sys.path.insert(0, os.path.abspath(".."))
+from server.mockDataGenerator import Point
 
-
-from .mockDataGenerator import Point
 import asyncio
 import websockets
 from time import sleep
-# from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from libraries.get_robot_position import *
 

@@ -4,7 +4,7 @@ from random import randint
 
 
 nrf = Bridge('/dev/ttyACM0')#'/dev/ttyACM1'
-camera, eBugs, unknown = nrf.assign_static_addresses()
+camera, eBugs, unknown = nrf.assign_static_addresses(path='../libraries/eBugs_pairing_list.json')
 
 ID = 0
 for address, info in eBugs.items():
