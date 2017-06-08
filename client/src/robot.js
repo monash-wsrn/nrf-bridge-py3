@@ -48,7 +48,8 @@ export class Robot {
     moveTo(newPositionX, newPositionY, angle) {
         this.position.x = newPositionX;
         this.position.y = newPositionY;
-        this.angle = angle;
+        if (angle !== -1)
+            this.angle = angle;
 
         this.calcTrianglePositions();
         if(this.tracking) {

@@ -45,9 +45,12 @@ export class RobotManager {
     }
 
     moveRobot(id, x, y, angle){
-        this.robots[id].moveTo(x, y, angle);
-
-        this.afterMoveActions(id, x, y, angle);
+        if(id < this.robots.length) {
+            this.robots[id].moveTo(x, y, angle);
+            this.afterMoveActions(id, x, y, angle);
+        }
+        else
+            console.log("The Robot with id :" + id + " doesn't exist.")
     }
 
     getRobotFactory(params={}){
