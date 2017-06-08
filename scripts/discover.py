@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
-from nrf import Bridge
+from libraries.nrf import Bridge
 
 nrf=Bridge()
-camera, eBugs, unknown = nrf.assign_static_addresses()
+camera, eBugs, unknown = nrf.assign_static_addresses(path='../libraries/eBugs_pairing_list.json')
 
 for addr, info in eBugs.items():
     nrf.set_TX_address(addr)

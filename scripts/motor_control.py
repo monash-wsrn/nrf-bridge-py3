@@ -4,7 +4,7 @@ import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import QTimer
 
-from nrf import Bridge
+from libraries.nrf import Bridge
 
 
 app = QApplication(sys.argv)

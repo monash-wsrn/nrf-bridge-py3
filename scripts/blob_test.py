@@ -13,7 +13,7 @@ import threading
 from multiprocessing import Process
 
 nrf = Bridge()
-nrf.assign_static_addresses()
+nrf.assign_static_addresses(path='../libraries/eBugs_pairing_list.json')
 
 nrf.set_TX_address(10)
 
