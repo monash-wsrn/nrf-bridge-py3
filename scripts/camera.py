@@ -1,4 +1,6 @@
 #!/usr/bin/python
+
+import settings
 from libraries.nrf import Bridge
 import numpy as np
 import cv2
