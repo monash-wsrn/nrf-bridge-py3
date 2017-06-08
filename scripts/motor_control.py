@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import sys
-
+import settings
 from PyQt4.QtGui import *
 from PyQt4.QtCore import QTimer
 
