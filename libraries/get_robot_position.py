@@ -50,7 +50,6 @@ def get_robot_position(ts, camera):
                 LED_colors = np.array(LED_colors_buffer)
                 blob_sizes = np.array(blob_size_buffer)
             if len(LED_positions) > 5:
-                # print('Captage de ', len(LED_positions), ' LEDs')
                 # Find the closest neighbors of each LED_positions
                 neigh = NearestNeighbors(n_neighbors=4, algorithm='ball_tree').fit(LED_positions)
                 distances, indices = neigh.kneighbors(LED_positions)
@@ -96,12 +95,15 @@ def get_robot_position(ts, camera):
                         radius.append(int(circle_LEDs.calc_R(*center).mean()))
                         LEDColor_per_Ebug.append(LED_colors[np.where(valid_cluster_index == i)])
                         BlobSize_per_Ebug.append(blob_sizes[np.where(valid_cluster_index == i)])
+                    orientation = []
                     for i in range(len(radius)):
-                        color_seq, blob_seq = CL.GetSequence(LEDs_per_Ebug[i], LEDColor_per_Ebug[i],
-                                                             BlobSize_per_Ebug[i],
-                                                             centers[i], radius[i], 16)
+                        color_seq, blob_seq, pos_seq = CL.GetSequence(LEDs_per_Ebug[i], LEDColor_per_Ebug[i],
+                                                                      BlobSize_per_Ebug[i],
+                                                                      centers[i], radius[i], 16)
                         EbugID = CL.EbugIdDtection(color_seq, LED_DETECTION_THRESHOLD)
                         if EbugID != -1:
+                            EbugOrientation = CL.get_orientation(color_seq, EbugID, pos_seq, centers[i])
+                            orientation.append(EbugOrientation)
                             ID.append(EbugID)
                     ebugs_list = []
                     for i in range(len(ID)):
@@ -111,8 +113,9 @@ def get_robot_position(ts, camera):
                             "x": int(centers[i][0]),
                             "y": int(centers[i][1]),
                             "Radius": int(radius[i]),
-                            "angle": 0
+                            "angle": orientation[i]
                         }
+                        #sleep(1)
                         ebugs_list.append(ebug)
                     if len(ebugs_list) != 0:
                         str_array = []

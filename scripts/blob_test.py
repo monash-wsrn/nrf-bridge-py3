@@ -6,7 +6,7 @@
 3- launch the function "blob_test.record(number_of_seconds_to_record, filename)"
 '''
 
-from nrf import Bridge
+from libraries.nrf import Bridge
 import time
 import sys
 import threading

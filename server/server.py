@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
+import os, sys, argparse, time
 
-import argparse
-import os, sys, argparse
 sys.path.insert(0, os.path.abspath(".."))
 from server.mockDataGenerator import Point
 import asyncio
@@ -39,12 +38,15 @@ async def mocked_producer():
 
 
 async def real_producer():
+    start = time.time()
     while True:
         try:
             x = get_robot_position(0, camera)
 
             if x:
+                now = time.time() - start
                 print(x)
+                print(now)
                 return x
 
         except RuntimeError as e:
