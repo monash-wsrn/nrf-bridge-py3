@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
-import os, sys, argparse
-sys.path.insert(0, os.path.abspath(".."))
-from server.mockDataGenerator import Point
 
+import argparse
+from .mockDataGenerator import Point
 import asyncio
 import websockets
 from time import sleep
@@ -82,6 +81,7 @@ async def handler(websocket, path):
             producer_task.cancel()
             listener_task.cancel()
             break
+
 
 # Classic HTTP requests server, not in use currently
 # HTTPRequestHandler class
