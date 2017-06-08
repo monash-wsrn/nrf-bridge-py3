@@ -93,14 +93,6 @@ let sketch = (p) => {
         triangleColor: "#FF0000"
     });
 
-    RobotFact1.getRobot(0, 20, 20, 100);
-    RobotFact1.getRobot(1, 100, 100, 100);
-    RobotFact1.getRobot(2, 300, 50, 145);
-
-    RobotFact2.getRobot(3, 550, 200, 280);
-    RobotFact2.getRobot(4, 800, 389, 300);
-    RobotFact2.getRobot(5, 490, 50, 270);
-
     button1.setAction(() => RobotMan.switchGradientMode());
     button2.setAction(() => RobotMan.switchTrackingMode());
     button3.setAction(() => {
@@ -136,15 +128,33 @@ let websocket;
 //Setting the websocket connection on load
 window.addEventListener("load", function () {
 
-    let onMessage = function (msg) {
-        let robotsArray = JSON.parse(msg.data);
+    let firstMessage = true;
 
-        robotsArray.forEach((element) => {
-            RobotMan.moveRobot(element.id - 1,
-                element.x * canvasWidth / 1000,
-                element.y * canvasHeight / 1000,
-                element.angle);
-        });
+    let onMessage = function (msg) {
+        let dataArray = JSON.parse(msg.data);
+
+        if (firstMessage)
+            dataArray.forEach((element, index) => {
+                if (index % 2 == 0)
+                    RobotFact1.getRobot(element.id - 1,
+                                        element.x * canvasWidth / 1000,
+                                        element.y * canvasHeight / 1000,
+                                        element.angle);
+                else
+                    RobotFact2.getRobot(element.id - 1,
+                                        element.x * canvasWidth / 1000,
+                                        element.y * canvasHeight / 1000,
+                                        element.angle);
+            });
+        else
+            dataArray.forEach((element) => {
+                RobotMan.moveRobot(element.id - 1,
+                    element.x * canvasWidth / 1000,
+                    element.y * canvasHeight / 1000,
+                    element.angle);
+            });
+
+        firstMessage = false
     };
 
     websocket = WebsocketConnection.createConnection(false, onMessage);
