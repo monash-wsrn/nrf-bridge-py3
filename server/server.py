@@ -2,7 +2,9 @@
 
 
 import argparse
-from .mockDataGenerator import Point
+import os, sys, argparse
+sys.path.insert(0, os.path.abspath(".."))
+from server.mockDataGenerator import Point
 import asyncio
 import websockets
 from time import sleep
