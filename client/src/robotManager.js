@@ -14,7 +14,7 @@ let ROBOT_TRIANGLE_COLOR = "#FF0000";
 
 
 export class RobotManager {
-    constructor(p5, onSpy=false) {
+    constructor(p5, onSpy = false) {
         this.p = p5;
         this.factories = [];
         this.robots = [];
@@ -27,33 +27,41 @@ export class RobotManager {
         this.gradientManager = new GradientManager();
 
         this.afterMoveTimeout = 0;
-        this.nextRobotId = 0;
+        this.nextRobotListId = 0;
 
-        if(onSpy)
+        if (onSpy)
             this.onSpy = onSpy;
 
         this.afterMoveActions = this.afterMoveActions.bind(this);
         this.addRobot = this.addRobot.bind(this);
     }
 
-    addRobot(robot){
-        robot.id = this.nextRobotId++;
+    addRobot(robot) {
+        robot.list_id = this.nextRobotListId++;
         this.trackedPositionManager.addTracker(robot.trackedPositionManager);
         this.gradientManager.addGradient(robot.gradientManager);
 
         this.robots.push(robot);
     }
 
-    moveRobot(id, x, y, angle){
-        if(id < this.robots.length) {
-            this.robots[id].moveTo(x, y, angle);
+    getRobot(id) {
+        return this.robots.find((element) => {
+            return element.id === id
+        })
+    }
+
+    moveRobot(id, x, y, angle) {
+        let robot = this.getRobot(id);
+
+        if (robot) {
+            robot.moveTo(x, y, angle);
             this.afterMoveActions(id, x, y, angle);
         }
         else
-            console.log("The Robot with id :" + id + " doesn't exist.")
+            console.log("The Robot " + id + " doesn't exist")
     }
 
-    getRobotFactory(params={}){
+    getRobotFactory(params = {}) {
         let factory = new RobotFactory(this.p, params, this.addRobot);
 
         this.factories.push(factory);
@@ -61,41 +69,41 @@ export class RobotManager {
         return factory;
     }
 
-    drawAll(){
-        if(this.tracking)
+    drawAll() {
+        if (this.tracking)
             this.trackedPositionManager.drawAll();
         // this.robots.forEach((element)=>element.drawSecondaryElements());
-        this.robots.forEach((element)=>element.drawMainElements());
+        this.robots.forEach((element) => element.drawMainElements());
     }
 
-    switchGradientMode(){
+    switchGradientMode() {
         this.gradient = !this.gradient;
-        this.robots.forEach((element)=>element.switchGradient());
+        this.robots.forEach((element) => element.switchGradient());
     }
 
-    switchTrackingMode(){
+    switchTrackingMode() {
         this.tracking = !this.tracking;
-        this.robots.forEach((element)=>element.switchTracking());
+        this.robots.forEach((element) => element.switchTracking());
     }
 
-    switchSpyingMode(){
+    switchSpyingMode() {
         this.spying = !this.spying;
     }
 
-    afterMoveActions(id, x, y, angle){
+    afterMoveActions(id, x, y, angle) {
         this.afterMoveTimeout++;
-        if((this.afterMoveTimeout % 50) === 0) {
+        if ((this.afterMoveTimeout % 50) === 0) {
             // this.factories.forEach((element)=>element.afterMoveActions(id, x, y, angle));
-            if(this.gradient)
+            if (this.gradient)
                 this.gradientManager.checkGradient(id, x, y);
-            if(this.spying) {
+            if (this.spying) {
                 this.sendSpyedInfo();
             }
         }
     }
 
-    sendSpyedInfo(){
-        let data = this.robots.slice(0).map((elem, index)=> {
+    sendSpyedInfo() {
+        let data = this.robots.slice(0).map((elem, index) => {
             return {robotId: index, robotInfo: elem.jsonSerialize()};
         });
 
@@ -105,7 +113,7 @@ export class RobotManager {
 
 //Factory for Robots
 export class RobotFactory {
-    constructor(p5, params={}, addRobot) {
+    constructor(p5, params = {}, addRobot) {
         this.p = p5;
         this.robotWidth = params.robotWidth || ROBOT_WIDTH;
         this.robotColor = params.robotColor || ROBOT_COLOR;
@@ -119,7 +127,7 @@ export class RobotFactory {
     }
 
     getRobot(robotName, originalPositionX, originalPositionY, originalAngle) {
-        let robot =  new Robot(robotName,
+        let robot = new Robot(robotName,
             originalPositionX,
             originalPositionY,
             originalAngle,

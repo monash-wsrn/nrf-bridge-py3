@@ -10,18 +10,18 @@ let ROBOT_TRIANGLE_HEIGHT = Math.sqrt((16 * 16) - 64);
 let x1 = -8, y1 = 0, x2 = 8, y2 = 0, x3 = 0, y3 = -ROBOT_TRIANGLE_HEIGHT;
 
 //Options Constants
-let TRACKING_TIMEOUT = 24;
+let TRACKING_TIMEOUT = 10;
 
 
 export class Robot {
 
-    constructor(robotName, originalPositionX, originalPositionY, originalAngle,
+    constructor(robotId, originalPositionX, originalPositionY, originalAngle,
                 robotWidth, robotColor, textSize, triangleColor, p5, options) {
         this.p = p5;
 
         this.position = {x: originalPositionX, y: originalPositionY};
         this.angle = originalAngle;
-        this.name = String(robotName);
+        this.id = robotId;
         this.triangle = {baseCenter: {x: null, y: null}, color: triangleColor || "red"};
         this.width = robotWidth;
         this.radius = robotWidth/2;
@@ -102,7 +102,7 @@ export class Robot {
         this.p.fill(this.triangle.color);
 
         this.p.textSize(this.textSize);
-        this.p.text(this.name, this.position.x - this.textOffset, this.position.y + this.textOffset);
+        this.p.text(this.id, this.position.x - this.textOffset, this.position.y + this.textOffset);
 
         this.p.pop();
     }
@@ -127,7 +127,7 @@ export class Robot {
         };
 
         let robotGenInfo = {
-            name: this.name,
+            id: this.id,
             width: this.width,
             radius: this.radius,
             backgroundColor: this.backgroundColor,
