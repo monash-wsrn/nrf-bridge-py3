@@ -136,7 +136,7 @@ window.addEventListener("load", function () {
         if (firstMessage)
             dataArray.forEach((element, index) => {
                 if ((index % 2) === 0)
-                    RobotFact1.getRobot(element.id - 1,
+                    RobotFact1.getRobot(element.id,
                                         element.x * canvasWidth / 1000,
                                         element.y * canvasHeight / 1000,
                                         element.angle);
@@ -148,7 +148,7 @@ window.addEventListener("load", function () {
             });
         else
             dataArray.forEach((element) => {
-                RobotMan.moveRobot(element.id - 1,
+                RobotMan.moveRobot(element.id,
                     element.x * canvasWidth / 1000,
                     element.y * canvasHeight / 1000,
                     element.angle);
