@@ -1,9 +1,11 @@
 '''
 (last updated 26 May 2017 by Ahmet)
 0- blob-test.py must be in the same file as nrf.py
+0 bis - install tkinter with the command : apt-get install python3-tk
 1- From a terminal, go to blob-test.py directory and lauch ipython or python3
 2- import blob_test
-3- launch the function "blob_test.record(number_of_seconds_to_record, filename)"
+3- launch the function you want
+4- if you want an impressive view of the eBugs launch log_blobs(seconds, file) and then display()
 '''
 
 import settings
@@ -12,19 +14,33 @@ import time
 import sys
 import threading
 from multiprocessing import Process
+import tkinter
 
 nrf = Bridge()
-nrf.assign_static_addresses(path='../libraries/eBugs_pairing_list.json')
 
-nrf.set_TX_address(10)
+while True:
+    camera, eBugs, unknown = nrf.assign_static_addresses(path='../libraries/eBugs_pairing_list.json')
+    if camera:
+        break
+    else:
+        print(" -------- Waiting for camera --------")
+        time.sleep(0.03)
 
+#set communication with the first camera detected
+#to be changed when multiple cameras
+nrf.set_TX_address(next(iter(camera)))
+
+#settings camera
 nrf.camera_write_reg(0x10, 20)
 values = [0x79, 0x9a, 0xb1, 0x5a, 0xc6, 0x70, 0xa3, 0x82]
 nrf.set_camera_thresholds(values)
 
-array = list()
-
-def test1(maxINT):
+def stat(maxINT):
+    '''
+    @param int maxINT : the number of get_blobs() calls
+    @return : displays various stats on the function get_blobs()
+    '''
+    array = list()
     mean = 0
     fail_number = 0
     for i in range(maxINT):
@@ -52,6 +68,10 @@ def test1(maxINT):
     print ("\nMini : %f ms, Maxi : %f ms, Mean : %f ms, Fail number : %d, Fail rate : %f %%\n" % (mini, maxi, mean, fail_number, fail_number/maxINT*100))
 
 def record(seconds, file):
+    '''
+    @param int seconds, string file
+    record full blobs obtained during @seconds in the @file specified
+    '''
     start = time.time()
     end = time.time()
 
@@ -63,10 +83,10 @@ def record(seconds, file):
             except:
                 saving_file.write('-------------------------Blob Error--------------------------\n')
             end = time.time()
-        
+   
+
+# Tests with timer and multiprocessing     
 def get_single_frame(first_blob = None):
-    #import ipdb
-    #ipdb.set_trace()
     timestamp = set()
     frame = []
     last_blob = None
@@ -119,42 +139,92 @@ def get_frames():
                 print('frame was full')
         except KeyboardInterrupt:
             break
+### End test with timer and multiprocessing
 
-def new_test():
-    frame = []
-    i = 1
-    #discard buffer by calling get_blobs() until we get an empty packet
-    while 1:
-        try:
-            blob = nrf.get_blobs()
-        except RuntimeError:
-            break
+FRAMES = list()
 
-    time_0 = time.time()
-    blob = nrf.get_blobs()
-    time_1 = time.time()
-    RTT = time_1 - time_0 #depends of the size of the blob
-    camera_time_0 = camera_time = blob[0]
-
-    print("RTT : %f, Camera Timestamp : %d ms, Blob info : %s\n" % (RTT, camera_time - camera_time_0, str(blob[1])) )
-
-    while 1:
-        try:
-            time_1 = time.time()
+def log_blobs(MAX_TIME, log_file):
+    '''
+    @params int MAX_TIME, string log_file
+    write in the @log_file file located in the folder /scripts/logs information about blobs
+    warninig : the logs folder must exist  
+    '''
+    with open('logs/' + log_file, 'w+') as log_blobs:
+        frame = []
+        i = 0
+        #discard buffer by calling get_blobs() for a few sedconds
+        #the first blob recorded in the file can correspond to the middle of a frame, ie first frame may be uncomplete
+        while i < 3000:
             try:
                 blob = nrf.get_blobs()
-            except RuntimeError as error:
-                print("RunTime Error : %s \n" % error)
+            except RuntimeError:
+                pass
+            i += 1
+
+        frame_number = 1
+
+        print("Start log")
+
+        while True:
+            time_0 = time.time()
+            try:
+                blob = nrf.get_blobs()
+            except RuntimeError:
                 continue
-            if camera_time != blob[0]:
-                print("FRAME #%d : %s\n" % (i, str(frame)))
-                i += 1
-                frame = []
-            if blob[1]:
-                frame.append(blob[1])
-            camera_time = blob[0]
-            time_2 = time.time()
-            RTT = time_2 - time_1 #depends of the size of the blob
-            print("RTT : %f, Camera Timestamp : %d ms, Blob info : %s\n" % (RTT, camera_time - camera_time_0, str(blob[1])) )
-        except KeyboardInterrupt:
+            time_1 = time.time()
             break
+
+        frame.extend(blob[1])
+        RTT = time_1 - time_0 #depends of the size of the blob
+        camera_time_0 = camera_time = blob[0]
+
+        log_blobs.write("UNIX : %f ms, RTT : %f, Camera Timestamp : %d ms, Blob info : %s\n" % ((time_1 - time_0) * 1000, RTT, camera_time - camera_time_0, str(blob[1])) )
+
+        while time_1 - time_0 < MAX_TIME:
+            try:
+                time_1 = time.time()
+                try:
+                    blob = nrf.get_blobs()
+                except RuntimeError as error:
+                    ex_type, ex, tb = sys.exc_info()
+                    traceback.print_tb(tb)
+                    log_blobs.write("RunTime Error : %s\n" % error)
+                    continue
+                if camera_time != blob[0]:
+                    log_blobs.write("FRAME #%d : %s\n" % (frame_number, str(frame)))
+                    frame_number += 1
+                    if frame:
+                        FRAMES.append(frame)
+                    frame = []
+                if blob[1]:
+                    frame.extend(blob[1])
+                camera_time = blob[0]
+                time_2 = time.time()
+                RTT = time_2 - time_1 #depends of the size of the blob
+                log_blobs.write("UNIX : %f ms, RTT : %f, Camera Timestamp : %d ms, Blob info : %s\n" % ((time_2 - time_0) * 1000, RTT, camera_time - camera_time_0, str(blob[1])) )
+            except KeyboardInterrupt:
+                break
+
+
+master = tkinter.Tk()
+w = tkinter.Canvas(master, width = 750, height = 750)
+
+def _create_circle(self, x, y, r, **kwargs):
+    return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
+tkinter.Canvas.create_circle = _create_circle
+
+def print_frame(event):
+    frame = FRAMES.pop()
+    for dot in frame:
+        color = "red" if dot[2] == 0 else "green" if dot[2] == 1 else "blue" 
+        w.create_circle(dot[0]*750/1000, dot[1]*750/1000, dot[3], fill = color) 
+
+def display():
+        w.pack()
+        w.bind('<Button-1>', print_frame)
+        w.config(bg = 'white', borderwidth = 1)
+
+        message = tkinter.Label(master, text = "Click on your left mouse button to see the next frame !")
+        message.pack(side=tkinter.BOTTOM)
+
+        tkinter.mainloop()
