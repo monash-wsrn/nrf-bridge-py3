@@ -8,6 +8,8 @@ let ROBOT_COLOR = "#FFFFFF";
 let ROBOT_TEXT_SIZE = 20;
 let ROBOT_TRIANGLE_COLOR = "#FF0000";
 
+let AFTER_MOVE_TIMEOUT = 10;
+
 /**
  * @class RobotManager
  * @desc Main RobotManager knowing about all the Robots and the factories (should probably be a singleton)
@@ -27,7 +29,8 @@ export class RobotManager {
         this.trackedPositionManager = new TrackedPositionManager();
         this.gradientManager = new GradientManager();
 
-        this.afterMoveTimeout = 0;
+        this.afterMoveCounter = 0;
+        this.afterMoveTimeout = AFTER_MOVE_TIMEOUT;
 
         if (onSpy)
             this.onSpy = onSpy;
@@ -61,6 +64,21 @@ export class RobotManager {
     }
 
     /**
+     * @method moveRobots
+     * @desc Moves several robots using a javascript object
+     * @param {Array} robotsLikeArray - Array of objects containing id, x, y and angle
+     */
+    moveRobots(robotsLikeArray) {
+        this.afterMoveCounter++;
+
+        robotsLikeArray.forEach((element) =>
+            this.moveRobot(element.id, element.x, element.y, element.angle)
+        );
+
+        this.afterMovesActions()
+    }
+
+    /**
      * @method moveRobot
      * @desc Move a robot
      * @param {Integer} id - Id of the robot to move
@@ -71,10 +89,8 @@ export class RobotManager {
     moveRobot(id, x, y, angle) {
         let robot = this.getRobot(id);
 
-        if (robot) {
+        if (robot)
             robot.moveTo(x, y, angle);
-            this.afterMoveActions(id, x, y, angle);
-        }
         else
             console.log("The Robot " + id + " doesn't exist")
     }
@@ -131,6 +147,22 @@ export class RobotManager {
     }
 
     /**
+     * @method afterMovesActions
+     * @desc Place to trigger all the methods that should be called after all robots moves
+     */
+    afterMovesActions() {
+        if (this.afterMoveCounter % (this.robots.length * this.afterMoveTimeout) === 0) {
+            if (this.spying) {
+                this.sendSpiedInfo();
+            }
+            this.robots.forEach((element) => {
+                    this.afterMoveActions(element.id, element.position.x, element.position.y, element.angle);
+                }
+            )
+        }
+    }
+
+    /**
      * @method afterMoveActions
      * @desc Place to trigger all the methods that should be called after a move
      * @param {Integer} id - Id of the moving robot
@@ -139,15 +171,9 @@ export class RobotManager {
      * @param {Number} angle - New orientation
      */
     afterMoveActions(id, x, y, angle) {
-        this.afterMoveTimeout++;
-        if ((Math.ceil(this.afterMoveTimeout/this.robots.length) % 50) === 0) {
-            // this.factories.forEach((element)=>element.afterMoveActions(id, x, y, angle));
-            if (this.gradient)
-                this.gradientManager.checkGradient(id, x, y);
-            if (this.spying) {
-                this.sendSpiedInfo();
-            }
-        }
+        // this.factories.forEach((element)=>element.afterMoveActions(id, x, y, angle));
+        if (this.gradient)
+            this.gradientManager.checkGradient(id, x, y);
     }
 
     /**

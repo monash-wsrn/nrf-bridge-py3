@@ -14,10 +14,10 @@ export class WebsocketConnection {
      * @param {Function} [onError=false] - Function to call when an error happens
      * @returns {WebsocketConnection}
      */
-    static createConnection(consoleLogs = false, address="ws://127.0.0.1:8765/", onMessage = () => {},
+    static createConnection(consoleLogs = false, onMessage = () => {},
                                                  onOpen = () => {},
                                                  onClose = () => {},
-                                                 onError = () => {}) {
+                                                 onError = () => {}, address="ws://127.0.0.1:8765/") {
         if (onOpen === (() => {}))
             onOpen = () => {
                 this.send("Connection opened");

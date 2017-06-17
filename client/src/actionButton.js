@@ -6,7 +6,7 @@
  * @param {String} [buttonClass=""] - Css class to apply to the button
  */
 export class Button {
-    constructor(action=()=>{}, text, buttonClass="") {
+    constructor(action = () => {}, text, buttonClass = "") {
         this.element = document.createElement("button");
         this.element.className += " button";
         this.element.onmousedown = action;
@@ -19,7 +19,7 @@ export class Button {
      * @desc Sets the action of the button as the provided function
      * @param {Function} action - Function to be triggered when clicking on the button
      */
-    setAction(action){
+    setAction(action) {
         this.element.onmousedown = action;
     }
 

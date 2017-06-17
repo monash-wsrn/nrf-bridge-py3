@@ -49,6 +49,7 @@ export class RobotTrackedPositionManager {
     constructor(p5, robot, lifespan) {
         this.p5 = p5;
         this.width = robot.width;
+        this.robotId = robot.id;
 
         this.colorGradient = getGradientHexa(robot.backgroundColor, "black", lifespan || LIFESPAN);
 

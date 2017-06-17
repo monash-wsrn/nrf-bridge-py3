@@ -33,11 +33,11 @@ export class Robot {
         this.id = robotId;
         this.triangle = {baseCenter: {x: null, y: null}, color: triangleColor || "red"};
         this.width = robotWidth;
-        this.radius = robotWidth/2;
-        this.reducedRadius = (this.radius*9)/22.5;
+        this.radius = robotWidth / 2;
+        this.reducedRadius = (this.radius * 9) / 22.5;
         this.backgroundColor = robotColor;
         this.textSize = textSize || 20;
-        this.textOffset = (6*this.textSize)/20;
+        this.textOffset = (6 * this.textSize) / 20;
 
         this.gradient = false;
         this.tracking = false;
@@ -46,8 +46,8 @@ export class Robot {
         this.trackedPositionManager = new RobotTrackedPositionManager(this.p, this);
         this.gradientManager = new Gradient(this.p, this);
 
-        this.getRadAngle = function(){
-            return this.angle * (Math.PI/180);
+        this.getRadAngle = function () {
+            return this.angle * (Math.PI / 180);
         };
 
         this.calcTrianglePositions();
@@ -68,8 +68,8 @@ export class Robot {
             this.angle = angle;
 
         this.calcTrianglePositions();
-        if(this.tracking) {
-            if((this.trackingCount % this.trackingTimeout) === 0)
+        if (this.tracking) {
+            if ((this.trackingCount % this.trackingTimeout) === 0)
                 this.trackedPositionManager.addPosition(newPositionX, newPositionY);
             this.trackingCount++;
         }
@@ -79,17 +79,17 @@ export class Robot {
      * @method calcTrianglePositions
      * @desc Updates the positions of the points of the triangle indicating orientation
      */
-    calcTrianglePositions(){
-        this.triangle.baseCenter.x = this.position.x + Math.sin(this.getRadAngle())*this.reducedRadius;
-        this.triangle.baseCenter.y = this.position.y - Math.cos(this.getRadAngle())*this.reducedRadius;
+    calcTrianglePositions() {
+        this.triangle.baseCenter.x = this.position.x + Math.sin(this.getRadAngle()) * this.reducedRadius;
+        this.triangle.baseCenter.y = this.position.y - Math.cos(this.getRadAngle()) * this.reducedRadius;
     }
 
     /**
      * @method drawMainElements
      * @desc Draws the gradient if necessary, the border, the circle, the number and the triangle (the whole robot actually)
      */
-    drawMainElements(){
-        if(this.gradient)
+    drawMainElements() {
+        if (this.gradient)
             this.drawGradient();
 
         this.drawBorder();
@@ -102,7 +102,7 @@ export class Robot {
      * @method drawCircle
      * @desc Draws the circle representing the robot
      */
-    drawCircle(){
+    drawCircle() {
         this.p.fill(this.backgroundColor);
         this.p.ellipse(this.position.x, this.position.y, this.width);
     }
@@ -111,7 +111,7 @@ export class Robot {
      * @method drawBorder
      * @desc Draws the border of the robot
      */
-    drawBorder(){
+    drawBorder() {
         this.p.fill(this.triangle.color);
         this.p.ellipse(this.position.x, this.position.y, this.width + 5);
     }
@@ -120,7 +120,7 @@ export class Robot {
      * @method drawTriangle
      * @desc Draws the triangle indicating the robot's orientation
      */
-    drawTriangle(){
+    drawTriangle() {
         this.p.push();
 
         this.p.fill(this.triangle.color);
@@ -136,7 +136,7 @@ export class Robot {
      * @method drawNumber
      * @desc Draws the id of the robot into it
      */
-    drawNumber(){
+    drawNumber() {
         this.p.push();
 
         this.p.fill(this.triangle.color);
@@ -151,7 +151,7 @@ export class Robot {
      * @method drawGradient
      * @desc Draws the robot gradient using the robot's gradient manager
      */
-    drawGradient(){
+    drawGradient() {
         this.gradientManager.draw();
     }
 
@@ -159,7 +159,7 @@ export class Robot {
      * @method switchGradient
      * @desc Unable/disable the display of the gradient from the robot
      */
-    switchGradient(){
+    switchGradient() {
         this.gradient = !this.gradient;
     }
 
@@ -167,7 +167,7 @@ export class Robot {
      * @method switchGradient
      * @desc Unable/disable the display of the tracked positions from the robot (But not from the general manager)
      */
-    switchTracking(){
+    switchTracking() {
         this.tracking = !this.tracking;
     }
 
@@ -176,7 +176,7 @@ export class Robot {
      * @desc Serialize all the information in the Robot object into a javascript object (json-like)
      * @returns {{genRobotInfo: {id: Integer, width: Number, radius: Number, backgroundColor: String, textSize: Number, textOffset: Number}, currRobotInfo: {position: {x: Number, y: Number}, angle: Number, triangle: {baseCenter: {x: Number, y: Number}, color: String}}, actionsInfo: {gradient: Boolean, tracking: Boolean, trackingCount: Number, trackingTimeout: Number, trackedPositionManager: {robotWidth, startPositionIndex, lifespan, trackedPositions}}}}
      */
-    jsonSerialize(){
+    jsonSerialize() {
         let robotCurrentInfo = {
             position: this.position,
             angle: this.angle,

@@ -33,7 +33,7 @@ export class GradientManager {
             if (id !== element.robot.id) {
                 distance = Math.sqrt(Math.pow((element.robot.position.x - x), 2) + Math.pow((element.robot.position.y - y), 2))
 
-                if (distance <= 100)
+                if (distance <= 125)
                     if (distance <= 50)
                         console.log("Robot " + id + " crashed into robot " + element.robot.id + " !");
                     else

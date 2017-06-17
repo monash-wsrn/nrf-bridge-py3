@@ -111,6 +111,14 @@ Gets a robot by id
 
 Returns **([Robot](#robot) | null)** 
 
+### moveRobots
+
+Moves several robots using a javascript object
+
+**Parameters**
+
+-   `robotsLikeArray` **Array** Array of objects containing id, x, y and angle
+
 ### moveRobot
 
 Move a robot
@@ -147,6 +155,10 @@ Unable/Disable position tracking
 ### switchSpyingMode
 
 Unable/Disable spying
+
+### afterMovesActions
+
+Place to trigger all the mehtods that should be called after a move of all the robots
 
 ### afterMoveActions
 

@@ -34,6 +34,7 @@ optionsDiv.appendChild(button2.element);
 optionsDiv.appendChild(button3.element);
 
 let spyDiv = document.createElement("div");
+spyDiv.className = "spyDiv";
 optionsDiv.appendChild(spyDiv);
 
 //Adjusting canvas size to the window
@@ -51,7 +52,6 @@ let max_distance, RobotMan, RobotFact1, RobotFact2, posForSpeed = [], speeds = [
 // Defining the action to use when "spying" the robots
 // There it computes the instant speed saving positions
 let onSpy = (data) => {
-    // console.log(Object.assign({date: new Date()}, data));
 
     if (posForSpeed.length === 0) {
         data.forEach((elem, index) => {
@@ -63,8 +63,6 @@ let onSpy = (data) => {
             speeds.push({id: index, speed: "N.A", angle: elem.robotInfo.currRobotInfo.angle})
         });
     }
-
-
     else {
         data.forEach((elem, index) => {
             posForSpeed[index] = Object.assign(posForSpeed[index], {
@@ -74,8 +72,8 @@ let onSpy = (data) => {
 
             speeds[index] = {
                 id: index,
-                speed: Math.round(Math.sqrt(Math.pow((posForSpeed[index].newPosition.x - posForSpeed[index].oldPosition.x), 2)
-                        + Math.pow((posForSpeed[index].newPosition.y - posForSpeed[index].oldPosition.y), 2)) / 0.5, -2),
+                speed: Math.round((Math.sqrt(Math.pow((posForSpeed[index].newPosition.x - posForSpeed[index].oldPosition.x), 2)
+                        + Math.pow((posForSpeed[index].newPosition.y - posForSpeed[index].oldPosition.y), 2)) / 0.5) * 100) / 100,
                 angle: elem.robotInfo.currRobotInfo.angle
             }
             ;
@@ -146,27 +144,20 @@ window.addEventListener("load", function () {
         let dataArray = JSON.parse(msg.data);
 
         //If it's the firstMessage we create the objects, if not we just update the positions
-        if (firstMessage)
-            dataArray.forEach((element, index) => {
+        dataArray.forEach((element, index, array) => {
+            array[index].x *= (canvasWidth / 1000);
+            array[index].y *= (canvasHeight / 1000);
+
+            if (firstMessage) {
                 //Arbitrarily setting half of the robots on each factory
                 if ((index % 2) === 0)
-                    RobotFact1.getRobot(element.id,
-                                        element.x * canvasWidth / 1000,
-                                        element.y * canvasHeight / 1000,
-                                        element.angle);
+                    RobotFact1.getRobot(element.id, element.x, element.y, element.angle);
                 else
-                    RobotFact2.getRobot(element.id - 1,
-                                        element.x * canvasWidth / 1000,
-                                        element.y * canvasHeight / 1000,
-                                        element.angle);
-            });
-        else
-            dataArray.forEach((element) => {
-                RobotMan.moveRobot(element.id,
-                    element.x * canvasWidth / 1000,
-                    element.y * canvasHeight / 1000,
-                    element.angle);
-            });
+                    RobotFact2.getRobot(element.id, element.x, element.y, element.angle);
+            }
+        });
+        if(!firstMessage)
+            RobotMan.moveRobots(dataArray);
 
         firstMessage = false
     };
