@@ -135,6 +135,7 @@ export class RobotManager {
      */
     switchTrackingMode() {
         this.tracking = !this.tracking;
+        this.trackedPositionManager.resetTracking();
         this.robots.forEach((element) => element.switchTracking());
     }
 

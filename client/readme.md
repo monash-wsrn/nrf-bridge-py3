@@ -270,6 +270,10 @@ Returns **{genRobotInfo: {id: Integer, width: [Number](https://developer.mozilla
 
 Global manager for the RobotTrackedPositionManagers
 
+## resetTracking
+
+Resets the tracking in all the RobotTrackedPositionManagers
+
 ### drawAll
 
 Draws all the tracked positions respecting their order of appearance (older ones first)
@@ -322,6 +326,14 @@ Draws a particular tracked position from its number (1, 2, 3...)
 Returns the number of tracked positions within the manager
 
 Returns **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
+
+### cleanTracker 
+
+Removes the faded positions from the tracker, they are no longer referenced
+
+### resetTracking
+
+Reset the tracked positions by erasing everything
 
 ### jsonSerialize
 

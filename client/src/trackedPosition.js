@@ -1,6 +1,6 @@
 import {getGradientHexa} from './color'
 
-let LIFESPAN = 500;
+let LIFESPAN = 250;
 
 /**
  * @class TrackedPositionManager
@@ -9,6 +9,16 @@ let LIFESPAN = 500;
 export class TrackedPositionManager {
     constructor() {
         this.trackers = [];
+        this.resetTrackersCount = 0;
+        this.resetTrackersTimeout = 100;
+    }
+
+    /**
+     * @method resetTracking
+     * @desc resetTracking in all the RobotTrackedPositionManagers
+     */
+    resetTracking() {
+        this.trackers.forEach((element) => element.resetTracking());
     }
 
     /**
@@ -16,9 +26,13 @@ export class TrackedPositionManager {
      * @desc Draws all the tracked positions respecting their order of appearance (older ones first)
      */
     drawAll() {
+        this.resetTrackersCount++;
+
         let numberOfTracked = [];
-        for (let i = 0; i < this.trackers.length; i++)
-            numberOfTracked.push(this.trackers[i].getNumberOfTrackedPositions());
+        this.trackers.forEach((element) => {
+            numberOfTracked.push(element.getNumberOfTrackedPositions());
+            if (this.resetTrackersCount % this.resetTrackersTimeout === 0) element.cleanTracker();
+        });
 
         let nMax = Math.max(...numberOfTracked);
 
@@ -106,6 +120,24 @@ export class RobotTrackedPositionManager {
      */
     getNumberOfTrackedPositions() {
         return this.trackedPositions.length - this.startPositionIndex;
+    }
+
+    /**
+     * @method cleanTracker
+     * @desc Removing the faded positions from the tracker, they are no longer referenced
+     */
+    cleanTracker() {
+        this.trackedPositions = this.trackedPositions.slice(this.startPositionIndex);
+        this.startPositionIndex = 0;
+    }
+
+    /**
+     * @method resetTracking
+     * @desc Reset the tracked positions by erasing everything
+     */
+    resetTracking() {
+        this.trackedPositions = [];
+        this.startPositionIndex = 0;
     }
 
     /**
