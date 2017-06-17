@@ -1,3 +1,8 @@
+//This file is the main application, and the rest of the sources are a library
+//Which means that this is a particular way of doing things, but it could be used in various ways !
+
+//See this more like an example of using the architecture, than a big guideline
+
 let p5 = require('p5');
 window.p5 = p5;
 
@@ -5,7 +10,7 @@ import {RobotManager} from "./robotManager"
 import {ButtonCond} from "./actionButton"
 import {WebsocketConnection} from "./websocketConnection"
 
-// Setting up the elements
+// Setting up the html elements
 let app = document.getElementById("app");
 
 let canvasDiv = document.createElement("div");
@@ -14,6 +19,7 @@ optionsDiv.className = "optionsDiv";
 canvasDiv.className = "appCanvas";
 canvasDiv.id = "appCanvas";
 
+// Buttons
 let button1 = new ButtonCond(() => {
 }, "Enable Gradients", "Disable Gradients", "button1");
 let button2 = new ButtonCond(() => {
@@ -30,6 +36,7 @@ optionsDiv.appendChild(button3.element);
 let spyDiv = document.createElement("div");
 optionsDiv.appendChild(spyDiv);
 
+//Adjusting canvas size to the window
 let canvasWidth = window.getComputedStyle(canvasDiv).width;
 canvasWidth = canvasWidth.substring(0, canvasWidth.length - 2);
 
@@ -42,6 +49,7 @@ canvasHeight = canvasHeight - 85;
 let max_distance, RobotMan, RobotFact1, RobotFact2, posForSpeed = [], speeds = [];
 
 // Defining the action to use when "spying" the robots
+// There it computes the instant speed saving positions
 let onSpy = (data) => {
     // console.log(Object.assign({date: new Date()}, data));
 
@@ -80,6 +88,9 @@ let onSpy = (data) => {
 //Creating the sketch
 let sketch = (p) => {
 
+    //One Robot manager and two factories
+    //It couldn't have been done before because we need to initialize the RobotManager with p, so within the sketch
+    //Doing the same as with buttons with a "setP5" function would definitely be possible though
     RobotMan = new RobotManager(p, onSpy);
     RobotFact1 = RobotMan.getRobotFactory({
         robotWidth: 55,
@@ -93,6 +104,7 @@ let sketch = (p) => {
         triangleColor: "#FF0000"
     });
 
+    //Updating the buttons actions
     button1.setAction(() => RobotMan.switchGradientMode());
     button2.setAction(() => RobotMan.switchTrackingMode());
     button3.setAction(() => {
@@ -133,8 +145,10 @@ window.addEventListener("load", function () {
     let onMessage = function (msg) {
         let dataArray = JSON.parse(msg.data);
 
+        //If it's the firstMessage we create the objects, if not we just update the positions
         if (firstMessage)
             dataArray.forEach((element, index) => {
+                //Arbitrarily setting half of the robots on each factory
                 if ((index % 2) === 0)
                     RobotFact1.getRobot(element.id,
                                         element.x * canvasWidth / 1000,
