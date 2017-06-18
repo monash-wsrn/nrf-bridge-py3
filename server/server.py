@@ -9,7 +9,7 @@ import websockets
 from time import sleep
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from libraries.get_robot_position import *
+from libraries.get_eBug_position import *
 
 point_list = []
 
@@ -41,7 +41,7 @@ async def real_producer():
     start = time.time()
     while True:
         try:
-            x = get_robot_position(0, camera)
+            x = get_eBug_position(0, camera)
 
             if x:
                 now = time.time() - start

@@ -8,7 +8,12 @@ POINT_NUMBER = 2000
 
 
 def get_angle(x_move, y_move):
-
+    '''
+        Get angle from eBug fake direction
+    :param x_move: Boolean for x move of eBug
+    :param y_move: Boolean for y move of eBug
+    :return: angle: Approximate angle from eBug direction 
+    '''
     if x_move == 0 and y_move == 0:
         angle = 0
     elif x_move == 0 and y_move == 1:
@@ -34,6 +39,12 @@ def get_angle(x_move, y_move):
 
 
 class Point:
+    '''
+        Class used to represent one position.
+        
+        It contains methods to initialize, randomize, and get next position. It also contains
+        a JSON formatting method.
+    '''
     point_id = 0
 
     @classmethod

@@ -144,6 +144,12 @@ def seq_in_seq(subseq, seq):
 
 
 def EbugIdDtection(color_seq, thres):
+    '''
+        Compute eBug ID from a LED dictionnary and the color sequence detected 
+        :param color_seq: LEDs detected, grouped by eBug 
+        :param thres: Threshold
+        :return: eBugs' ID
+    '''
     global LED_DICT
     vote = [0] * len(LED_DICT)
     for i in range(len(color_seq) - thres + 1):

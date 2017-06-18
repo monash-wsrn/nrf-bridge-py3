@@ -12,6 +12,10 @@ LED_DETECTION_THRESHOLD = 6
 
 
 def contact_camera():
+    '''
+        Make the link with the USB bridge and the camera
+    :return: camera:  
+    '''
     nrf_bridge = nrf.Bridge('/dev/ttyACM0')  # or '/dev/ttyACM0'
     a = nrf_bridge.assign_addresses()
 
@@ -23,8 +27,37 @@ def contact_camera():
         raise RuntimeError('No camera found')
     return nrf_bridge
 
+def get_full_packet(camera):
+    '''
+        Extract all blobs from the camera buffer
+    :param camera: Object to interrogate for having the blobs 
+    :return: blob_list: Full list of blobs of one timestamp
+    '''
+    ts, blob_list = camera.get_blobs()
+    prev_ts = ts
+    while ts == prev_ts:
+        ts, blob = camera.get_blobs()
+        blob_list += blob
+    return blob_list
 
-def get_robot_position(ts, camera):
+def get_eBug_position(ts, camera):
+    '''
+        Global function to assemble every step used to compute a robot position
+    :param ts: Current timestamp 
+    :param camera: Object used to communicate with camera
+    :return: eBugs list of position
+    
+        Step by step :
+        1- Get all blobs available
+        2- Clustering of LEDs position by robots (nearest neighbours algorithm)
+        3- Keeping valid LEDs clusters
+        3- Computation of circle from valid LEDs clusters
+        4- Creation of color sequence, blob sequence and position sequence of 
+        information got
+        5- Computation of eBug ID, if enough information is available
+        6- Computation of orientation //STILL IN PROGRESS
+        7- JSON formatting of one position
+    '''
     try:
         ts, blobs_list = camera.get_blobs()
         prev_ts = ts
@@ -138,7 +171,8 @@ def main():
     i = 0
     # start = time()
     while True:
-        get_robot_position(0, camera)
+        print(get_full_packet(camera))
+    #     get_eBug_position(0, camera)
 
 
 if __name__ == '__main__':
