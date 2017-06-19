@@ -1,11 +1,16 @@
+//This file is the main application, and the rest of the sources are a library
+//Which means that this is a particular way of doing things, but it could be used in various ways !
+
+//See this more like an example of using the architecture, than a big guideline
+
+import {RobotManager} from './robotManager'
+import {ButtonCond} from './actionButton'
+import {WebsocketConnection} from './websocketConnection'
+
 let p5 = require('p5');
 window.p5 = p5;
 
-import {RobotManager} from "./robotManager"
-import {ButtonCond} from "./actionButton"
-import {WebsocketConnection} from "./websocketConnection"
-
-// Setting up the elements
+// Setting up the html elements
 let app = document.getElementById("app");
 
 let canvasDiv = document.createElement("div");
@@ -14,6 +19,7 @@ optionsDiv.className = "optionsDiv";
 canvasDiv.className = "appCanvas";
 canvasDiv.id = "appCanvas";
 
+// Buttons
 let button1 = new ButtonCond(() => {
 }, "Enable Gradients", "Disable Gradients", "button1");
 let button2 = new ButtonCond(() => {
@@ -28,8 +34,10 @@ optionsDiv.appendChild(button2.element);
 optionsDiv.appendChild(button3.element);
 
 let spyDiv = document.createElement("div");
+spyDiv.className = "spyDiv";
 optionsDiv.appendChild(spyDiv);
 
+//Adjusting canvas size to the window
 let canvasWidth = window.getComputedStyle(canvasDiv).width;
 canvasWidth = canvasWidth.substring(0, canvasWidth.length - 2);
 
@@ -42,8 +50,8 @@ canvasHeight = canvasHeight - 85;
 let max_distance, RobotMan, RobotFact1, RobotFact2, posForSpeed = [], speeds = [];
 
 // Defining the action to use when "spying" the robots
+// There it computes the instant speed saving positions
 let onSpy = (data) => {
-    // console.log(Object.assign({date: new Date()}, data));
 
     if (posForSpeed.length === 0) {
         data.forEach((elem, index) => {
@@ -55,8 +63,6 @@ let onSpy = (data) => {
             speeds.push({id: index, speed: "N.A", angle: elem.robotInfo.currRobotInfo.angle})
         });
     }
-
-
     else {
         data.forEach((elem, index) => {
             posForSpeed[index] = Object.assign(posForSpeed[index], {
@@ -66,8 +72,8 @@ let onSpy = (data) => {
 
             speeds[index] = {
                 id: index,
-                speed: Math.round(Math.sqrt(Math.pow((posForSpeed[index].newPosition.x - posForSpeed[index].oldPosition.x), 2)
-                        + Math.pow((posForSpeed[index].newPosition.y - posForSpeed[index].oldPosition.y), 2)) / 0.5, -2),
+                speed: Math.round((Math.sqrt(Math.pow((posForSpeed[index].newPosition.x - posForSpeed[index].oldPosition.x), 2)
+                        + Math.pow((posForSpeed[index].newPosition.y - posForSpeed[index].oldPosition.y), 2)) / 0.5) * 100) / 100,
                 angle: elem.robotInfo.currRobotInfo.angle
             }
             ;
@@ -80,6 +86,9 @@ let onSpy = (data) => {
 //Creating the sketch
 let sketch = (p) => {
 
+    //One Robot manager and two factories
+    //It couldn't have been done before because we need to initialize the RobotManager with p, so within the sketch
+    //Doing the same as with buttons with a "setP5" function would definitely be possible though
     RobotMan = new RobotManager(p, onSpy);
     RobotFact1 = RobotMan.getRobotFactory({
         robotWidth: 55,
@@ -93,14 +102,7 @@ let sketch = (p) => {
         triangleColor: "#FF0000"
     });
 
-    RobotFact1.getRobot(0, 20, 20, 100);
-    RobotFact1.getRobot(1, 100, 100, 100);
-    RobotFact1.getRobot(2, 300, 50, 145);
-
-    RobotFact2.getRobot(3, 550, 200, 280);
-    RobotFact2.getRobot(4, 800, 389, 300);
-    RobotFact2.getRobot(5, 490, 50, 270);
-
+    //Updating the buttons actions
     button1.setAction(() => RobotMan.switchGradientMode());
     button2.setAction(() => RobotMan.switchTrackingMode());
     button3.setAction(() => {
@@ -136,15 +138,28 @@ let websocket;
 //Setting the websocket connection on load
 window.addEventListener("load", function () {
 
-    let onMessage = function (msg) {
-        let robotsArray = JSON.parse(msg.data);
+    let firstMessage = true;
 
-        robotsArray.forEach((element) => {
-            RobotMan.moveRobot(element.id - 1,
-                element.x * canvasWidth / 1000,
-                element.y * canvasHeight / 1000,
-                element.angle);
+    let onMessage = function (msg) {
+        let dataArray = JSON.parse(msg.data);
+
+        //If it's the firstMessage we create the objects, if not we just update the positions
+        dataArray.forEach((element, index, array) => {
+            array[index].x *= (canvasWidth / 1000);
+            array[index].y *= (canvasHeight / 1000);
+
+            if (firstMessage) {
+                //Arbitrarily setting half of the robots on each factory
+                if ((index % 2) === 0)
+                    RobotFact1.getRobot(element.id, element.x, element.y, element.angle);
+                else
+                    RobotFact2.getRobot(element.id, element.x, element.y, element.angle);
+            }
         });
+        if(!firstMessage)
+            RobotMan.moveRobots(dataArray);
+
+        firstMessage = false
     };
 
     websocket = WebsocketConnection.createConnection(false, onMessage);
