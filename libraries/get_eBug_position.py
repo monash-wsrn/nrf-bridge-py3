@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import libraries.nrf as nrf
+from libraries import nrf
 from math import pi, sqrt
 import numpy as np
 from sklearn.neighbors import NearestNeighbors

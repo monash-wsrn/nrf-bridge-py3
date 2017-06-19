@@ -75,6 +75,14 @@ class Bridge:
         if x[0] != packet[0]:
             raise RuntimeError('Unexpected response: %s'%repr(list(bytearray(x))))
         return x[1:]
+
+    def send_packet_check_response_without_retry(self, packet):
+        x = self.send_packet(packet)
+        if x is None:
+            raise RuntimeError('Empty Response')
+        if x[0] != packet[0]:
+            raise RuntimeError('Unexpected response: %s'%repr(list(bytearray(x))))
+        return x[1:]
         
     def get_ID_type(self):
         x = self.send_packet_check_response(b'\x01')
@@ -432,7 +440,7 @@ class Bridge:
         timestamped with the frame it corresponds to so you can tell
         when you've missed a frame.
         """
-        x = self.send_packet_check_response(b'\x90')
+        x = self.send_packet_check_response_without_retry(b'\x90')
         n = len(x)//4
         z = struct.unpack(b'<' + b'I' * n,x)
         unpack = lambda i: tuple(i >> offset & (1 << length) - 1 for offset,length in [(0, 11), (11, 11), (22, 2), (24, 8)])

@@ -1,4 +1,6 @@
 #!/usr/bin/python
+
+import settings
 from libraries.nrf import Bridge
 import numpy as np
 import cv2
@@ -7,6 +9,7 @@ import time
 
 nrf = Bridge('/dev/ttyACM0')  # '/dev/ttyACM0'
 a = nrf.assign_addresses()
+
 for i in list(a.keys()):
     nrf.set_TX_address(i)
     if nrf.get_ID_type()[6] == 1:  # find first camera in neighbours
@@ -55,13 +58,7 @@ while True:
         if ts != prev_ts:
             img = np.zeros((480, 640, 3), np.uint8)
             for b in frame_blobs:
-                if b[2] == 3:
-                    cv2.circle(img, (b[0] // 2, b[1] // 2), int(b[3] / math.pi ** 0.5 / 2), colours[2], -1, cv2.LINE_AA)
-                else:
-                    cv2.circle(img, (b[0] // 2, b[1] // 2), int(b[3] / math.pi ** 0.5 / 2), colours[b[2]], -1, cv2.LINE_AA)
-                    # print 'x, y:',b[0]/2,b[1]/2
-                print()
-                b[3]
+                cv2.circle(img, (b[0] // 2, b[1] // 2), int(b[3] / math.pi ** 0.5 / 2), colours[b[2]], -1, cv2.LINE_AA)
             old_time = frame_times[0]
             new_time = (ts, time.time())
             frame_times = frame_times[1:] + [new_time]
@@ -76,4 +73,5 @@ while True:
         frame_blobs += blobs
 
     except RuntimeError as e:
+        print(e)
         continue  # TODO check what kind of error

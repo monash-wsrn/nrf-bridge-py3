@@ -1,0 +1,152 @@
+16 June 2017 Ahmet
+------------------
+Using:
+https://launchpad.net/~orangain/+archive/ubuntu/opencv
+
+asekerci@tony-utc 14:18 /usr/local/lib  : sudo apt-get install python3-opencv
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following additional packages will be installed:
+  libaec0 libarmadillo6 libarpack2 libdap17v5 libdapclient6v5 libepsilon1 libfreexl1 libgdal1i libgeos-3.5.0 libgeos-c1v5
+  libhdf4-0-alt libhdf5-10 libhwloc-plugins libhwloc5 libibverbs1 libkmlbase1 libkmldom1 libkmlengine1 libminizip1 libnetcdf-c++4
+  libnetcdf11 libogdi3.2 libopencv-calib3d3.0 libopencv-core-dev libopencv-core3.0 libopencv-features2d3.0 libopencv-flann3.0
+  libopencv-highgui3.0 libopencv-imgcodecs3.0 libopencv-imgproc-dev libopencv-imgproc3.0 libopencv-ml3.0 libopencv-objdetect3.0
+  libopencv-photo3.0 libopencv-shape3.0 libopencv-stitching3.0 libopencv-superres3.0 libopencv-video-dev libopencv-video3.0
+  libopencv-videoio3.0 libopencv-videostab3.0 libopencv-viz3.0 libopenmpi1.10 libpq5 libproj9 libspatialite7 libsuperlu4 libsz2
+  liburiparser1 libvtk6.2 odbcinst odbcinst1debian2 openmpi-bin openmpi-common proj-bin proj-data
+Suggested packages:
+  libhdf4-doc libhdf4-alt-dev hdf4-tools libnetcdf4 libhwloc-contrib-plugins ogdi-bin mpi-default-bin vtk6-doc vtk6-examples
+  openmpi-checkpoint
+The following NEW packages will be installed:
+  libaec0 libarmadillo6 libarpack2 libdap17v5 libdapclient6v5 libepsilon1 libfreexl1 libgdal1i libgeos-3.5.0 libgeos-c1v5
+  libhdf4-0-alt libhdf5-10 libhwloc-plugins libhwloc5 libibverbs1 libkmlbase1 libkmldom1 libkmlengine1 libminizip1 libnetcdf-c++4
+  libnetcdf11 libogdi3.2 libopencv-calib3d3.0 libopencv-core-dev libopencv-core3.0 libopencv-features2d3.0 libopencv-flann3.0
+  libopencv-highgui3.0 libopencv-imgcodecs3.0 libopencv-imgproc-dev libopencv-imgproc3.0 libopencv-ml3.0 libopencv-objdetect3.0
+  libopencv-photo3.0 libopencv-shape3.0 libopencv-stitching3.0 libopencv-superres3.0 libopencv-video-dev libopencv-video3.0
+  libopencv-videoio3.0 libopencv-videostab3.0 libopencv-viz3.0 libopenmpi1.10 libpq5 libproj9 libspatialite7 libsuperlu4 libsz2
+  liburiparser1 libvtk6.2 odbcinst odbcinst1debian2 openmpi-bin openmpi-common proj-bin proj-data python3-opencv
+0 upgraded, 57 newly installed, 0 to remove and 5 not upgraded.
+Need to get 0 B/56.9 MB of archives.
+After this operation, 251 MB of additional disk space will be used.
+
+--------
+asekerci@tony-utc 15:40 /usr/local/lib  : dpkg --get-selections | grep opencv | grep 3
+libopencv-calib3d3.0:amd64                      install
+libopencv-core3.0:amd64                         install
+libopencv-features2d3.0:amd64                   install
+libopencv-flann3.0:amd64                        install
+libopencv-highgui3.0:amd64                      install
+libopencv-imgcodecs3.0:amd64                    install
+libopencv-imgproc3.0:amd64                      install
+libopencv-ml3.0:amd64                           install
+libopencv-objdetect3.0:amd64                    install
+libopencv-photo3.0:amd64                        install
+libopencv-shape3.0:amd64                        install
+libopencv-stitching3.0:amd64                    install
+libopencv-superres3.0:amd64                     install
+libopencv-video3.0:amd64                        install
+libopencv-videoio3.0:amd64                      install
+libopencv-videostab3.0:amd64                    install
+libopencv-viz3.0:amd64                          install
+python3-opencv                                  install
+----------
+Unfortunately it didn't work.
+I will back out now:
+ asekerci@tony-utc 15:49 ~/ebug-swarm/nrf-bridge  : sudo apt-get remove python3-opencv
+[sudo] password for asekerci:
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following packages were automatically installed and are no longer required:
+  libaec0 libarmadillo6 libarpack2 libdap17v5 libdapclient6v5 libepsilon1 libfreexl1 libgdal1i libgeos-3.5.0 libgeos-c1v5
+  libhdf4-0-alt libhdf5-10 libhwloc-plugins libhwloc5 libibverbs1 libkmlbase1 libkmldom1 libkmlengine1 libminizip1 libnetcdf-c++4
+  libnetcdf11 libogdi3.2 libopencv-calib3d3.0 libopencv-core-dev libopencv-core3.0 libopencv-features2d3.0 libopencv-flann3.0
+  libopencv-highgui3.0 libopencv-imgcodecs3.0 libopencv-imgproc-dev libopencv-imgproc3.0 libopencv-ml3.0 libopencv-objdetect3.0
+  libopencv-photo3.0 libopencv-shape3.0 libopencv-stitching3.0 libopencv-superres3.0 libopencv-video-dev libopencv-video3.0
+  libopencv-videoio3.0 libopencv-videostab3.0 libopencv-viz3.0 libopenmpi1.10 libpq5 libproj9 libspatialite7 libsuperlu4 libsz2
+  liburiparser1 libvtk6.2 odbcinst odbcinst1debian2 openmpi-bin openmpi-common proj-bin proj-data
+Use 'sudo apt autoremove' to remove them.
+The following packages will be REMOVED:
+  python3-opencv
+0 upgraded, 0 newly installed, 1 to remove and 5 not upgraded.
+After this operation, 11.3 MB disk space will be freed.
+Do you want to continue? [Y/n] y
+-----------
+Hmmm... the libopencv libraries are still there but they are "amd64" libraries???
+asekerci@tony-utc 15:41 /usr/local/lib  : dpkg --get-selections | grep opencv | grep 3
+libopencv-calib3d3.0:amd64                      install
+libopencv-core3.0:amd64                         install
+libopencv-features2d3.0:amd64                   install
+libopencv-flann3.0:amd64                        install
+libopencv-highgui3.0:amd64                      install
+libopencv-imgcodecs3.0:amd64                    install
+libopencv-imgproc3.0:amd64                      install
+libopencv-ml3.0:amd64                           install
+libopencv-objdetect3.0:amd64                    install
+libopencv-photo3.0:amd64                        install
+libopencv-shape3.0:amd64                        install
+libopencv-stitching3.0:amd64                    install
+libopencv-superres3.0:amd64                     install
+libopencv-video3.0:amd64                        install
+libopencv-videoio3.0:amd64                      install
+libopencv-videostab3.0:amd64                    install
+libopencv-viz3.0:amd64                          install
+------------
+our machine is:
+asekerci@tony-utc 15:51 /usr/local/lib  : arch
+x86_64
+
+There is no difference: they are different names for the same
+thing. Actually, it was AMD themselves who started switching the name
+from AMD64 to x86_64... Now x86_64 is the "generic" name for AMD64 and
+EM64T (Extended Memory 64-bit Technology) as Intel named its
+implementation.
+-------------
+Uninstalled opencv_python-3.2.0.6 
+asekerci@tony-utc 16:21 ~  : sudo uninstall opencv-python
+The directory '/home/asekerci/.cache/pip/http' or its parent directory is not owned by the current user and the cache has been disabled. Please check the permissions and owner of that directory. If executing pip with sudo, you may want sudo's -H flag.
+Uninstalling opencv-python-3.2.0.6:
+  /usr/local/lib/python3.5/dist-packages/cv2/__init__.py
+  /usr/local/lib/python3.5/dist-packages/cv2/__pycache__/__init__.cpython-35.pyc
+  /usr/local/lib/python3.5/dist-packages/cv2/cv2.cpython-35m-x86_64-linux-gnu.so
+  /usr/local/lib/python3.5/dist-packages/opencv_python-3.2.0.6.dist-info/DESCRIPTION.rst
+  /usr/local/lib/python3.5/dist-packages/opencv_python-3.2.0.6.dist-info/INSTALLER
+  /usr/local/lib/python3.5/dist-packages/opencv_python-3.2.0.6.dist-info/METADATA
+  /usr/local/lib/python3.5/dist-packages/opencv_python-3.2.0.6.dist-info/RECORD
+  /usr/local/lib/python3.5/dist-packages/opencv_python-3.2.0.6.dist-info/WHEEL
+  /usr/local/lib/python3.5/dist-packages/opencv_python-3.2.0.6.dist-info/metadata.json
+  /usr/local/lib/python3.5/dist-packages/opencv_python-3.2.0.6.dist-info/top_level.txt
+Proceed (y/n)? y
+  Successfully uninstalled opencv-python-3.2.0.6
+-----------
+I still see import cv2 successful:
+ asekerci@tony-utc 16:22 ~/ebug-swarm/nrf-bridge  : ipython3
+Python 3.5.2 (default, Nov 17 2016, 17:05:23)
+Type "copyright", "credits" or "license" for more information.
+
+IPython 5.3.0 -- An enhanced Interactive Python.
+?         -> Introduction and overview of IPython's features.
+%quickref -> Quick reference.
+help      -> Python's own help system.
+object?   -> Details about 'object', use 'object??' for extra details.
+
+In [1]: import cv2
+-----------
+uninstalled python3.5 (minimal python3.5 is still there):
+asekerci@tony-utc 16:58 ~  : dpkg --get-selections | grep python3
+
+libpython3-stdlib:amd64                         install
+libpython3.5:amd64                              install
+libpython3.5-minimal:amd64                      install
+libpython3.5-stdlib:amd64                       install
+python3                                         deinstall
+python3-aptdaemon.pkcompat                      deinstall
+python3-cupshelpers                             deinstall
+python3-minimal                                 install
+python3.5-minimal                               install
+
+-----------
+uninstalled opencv 2.45 stuff..
+sudo apt remove libopencv-core2.4v5
+-----------

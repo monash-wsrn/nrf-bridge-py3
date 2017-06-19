@@ -1,3 +1,4 @@
+import settings
 from libraries.nrf import Bridge
 import time
 from random import randint
