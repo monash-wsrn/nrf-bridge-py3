@@ -74,8 +74,11 @@ Then browse to the file `./web/static/index.html`, you're there !
 
 As a developer, you'll need to install a few things to start working on this app:
 1. Install [node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/): `sudo apt-get install nodejs npm`
-2. Move to the `/client` directory
-3. Install the modules: `npm install` (It may take a few minutes)
+2. Clean npm cache: `sudo npm cache clean -f`
+3. Install globally a node helper (used to upgrade node via npm): `sudo npm install -g n`
+4. Upgrade your node version to the lts one (with support) using it: `sudo n lts`
+5. Move to the `/client` directory
+6. Install the modules: `npm install` (It may take a few minutes)
 
 Then you can start working using `npm start` in the `/client` directory and browsing to `http://localhost:8080/`.
 To build the production version (min.js file) use `npm run build`.
