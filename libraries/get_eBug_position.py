@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from libraries.clustering import Clusters
 import libraries.circle as CL
-# from time import time
+import time
 import json
 
 LED_DETECTION_THRESHOLD = 6
@@ -33,12 +33,15 @@ def get_full_packet(camera):
     :param camera: Object to interrogate for having the blobs 
     :return: blob_list: Full list of blobs of one timestamp
     '''
-    ts, blob_list = camera.get_blobs()
-    prev_ts = ts
-    while ts == prev_ts:
-        ts, blob = camera.get_blobs()
-        blob_list += blob
-    return blob_list
+    try:
+        ts, blob_list = camera.get_blobs()
+        prev_ts = ts
+        while ts == prev_ts:
+            ts, blob = camera.get_blobs()
+            blob_list += blob
+        return blob_list
+    except RuntimeError:
+        return []
 
 def get_eBug_position(ts, camera):
     '''
@@ -171,8 +174,9 @@ def main():
     i = 0
     # start = time()
     while True:
-        print(get_full_packet(camera))
-    #     get_eBug_position(0, camera)
+        x = get_eBug_position(0, camera)
+        if x is not None:
+            print(x)
 
 
 if __name__ == '__main__':

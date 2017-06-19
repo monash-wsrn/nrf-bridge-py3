@@ -82,7 +82,6 @@ def GetSequence(led, color, blob_size, center, R, N):
                 color_seq[index] = color[i]
                 pos_seq[index] = point
                 blob_seq[index] = blob_size[i]
-    # print("Pos seq", pos_seq)
     return color_seq, blob_seq, pos_seq
 
 
@@ -110,23 +109,44 @@ def get_all_5_sequences(sequence):
 
 
 def get_orientation(color_seq, EbugID, pos_seq, center):
-    current_dict = LED_DICT_2[EbugID]
+    '''
+    Compute the orientation of the robot from its position and ID
+    :param color_seq: 
+    :param EbugID: 
+    :param pos_seq: 
+    :param center: 
+    :return: angle:
+    '''
+
+    current_dict = list(reversed(LED_DICT_2[EbugID]))
     sequences_5_elem = get_all_5_sequences(color_seq)
     for seq in sequences_5_elem:
         position = seq_in_seq(seq, current_dict)
         if position != -1:
-            position_for_mv = seq_in_seq(seq, color_seq)
-            ind = position_for_mv - position
-            if ind < 0:
-                ind += 16
-            pos_led = pos_seq[ind]
-            if  not isinstance(pos_led, int):
-                # print(position_for_mv)
-                # print(position)
-                # print(ind)
-                angle = np.degrees(math.atan2(pos_led[0], pos_led[1])) + ind * -22.5 + 180
-                return angle
-            return -1
+            position_in_color_seq = seq_in_seq(seq, color_seq)
+            abs = pos_seq[position_in_color_seq]
+            rel_pos = [abs[0] - center[0], abs[1] - center[1]]
+            ray = math.sqrt(rel_pos[0] ** 2 + rel_pos[1] ** 2)
+            if (rel_pos[0] * rel_pos[1]) > 0:
+                ang_cos = math.cos(math.sqrt(rel_pos[0] ** 2) / ray) * 180 / math.pi
+                ang_sin = math.sin(math.sqrt(rel_pos[1] ** 2) / ray) * 180 / math.pi
+                ang = (ang_cos + ang_sin) / 2
+            else:
+                ang_cos = math.cos(math.sqrt(rel_pos[1] ** 2) / ray)
+                ang_sin = math.sin(math.sqrt(rel_pos[0] ** 2) / ray)
+                ang = (ang_cos + ang_sin) / 2
+            angle_with_dict = position * 22.5
+            if rel_pos[0] > 0:
+                if rel_pos[1] < 0:
+                    ang += 270
+            else:
+                if rel_pos[1] < 0:
+                    ang += 180
+                else:
+                    ang += 90
+
+            ang = ang-angle_with_dict
+            return ang
     return -1
 
 
