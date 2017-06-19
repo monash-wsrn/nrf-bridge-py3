@@ -1,5 +1,5 @@
 import {redToYellowGradient} from './color'
-let GRADIENT_RADIUS = 100;
+import * as constants from './constants'
 
 /**
  * @class GradientManager
@@ -56,7 +56,8 @@ export class Gradient {
         this.p5 = p5;
         this.robot = robot;
 
-        this.radius = radius || GRADIENT_RADIUS;
+        this.radius = radius || constants.GRADIENT_RADIUS;
+        
         this.gradColors = gradColors || redToYellowGradient;
     }
 

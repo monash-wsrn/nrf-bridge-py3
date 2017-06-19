@@ -1,6 +1,5 @@
 import {getGradientHexa} from './color'
-
-let LIFESPAN = 250;
+import * as constants from './constants'
 
 /**
  * @class TrackedPositionManager
@@ -58,18 +57,21 @@ export class TrackedPositionManager {
  * @param {p5} p5 - p5 library object
  * @param {Robot} robot - Robot to keep track of positions
  * @param {Number} [lifespan=500] - Time the tracked positions stay on screen (not in seconds but in terms of number of executions)
+ * @param {Number} [fadingTimeout=100] - Time elapsed between two fades of a tracked position
  */
 export class RobotTrackedPositionManager {
-    constructor(p5, robot, lifespan) {
+    constructor(p5, robot, lifespan, fadingTimeout) {
         this.p5 = p5;
         this.width = robot.width;
         this.robotId = robot.id;
 
-        this.colorGradient = getGradientHexa(robot.backgroundColor, "black", lifespan || LIFESPAN);
+        this.lifespan = lifespan || constants.LIFESPAN;
+        this.fadingTimeout = fadingTimeout || constants.FADING_TIMEOUT;
+
+        this.colorGradient = getGradientHexa(robot.backgroundColor, "black", this.lifespan);
 
         this.startPositionIndex = 0;
         this.trackedPositions = [];
-        this.lifespan = lifespan || LIFESPAN;
     }
 
     /**
@@ -82,6 +84,7 @@ export class RobotTrackedPositionManager {
         this.trackedPositions.push(new TrackedPosition(this.p5, x, y,
             this.width,
             this.lifespan,
+            this.fadingTimeout,
             this.colorGradient,
             this.removePosition))
     }
@@ -165,16 +168,18 @@ export class RobotTrackedPositionManager {
  * @param {Number} y - The position y
  * @param {Number} width - The position width
  * @param {Integer} lifespan - The number of times the position will be displayed before fading completely
+ * @param {Number} fadingTimeout - Time elapsed between two fades of a tracked position
  * @param {Array} colorGradient - Array of strings hexadecimal colors for the fading of the position
  * @param {Function} removeTrack - Function to call to remove the tracked position from its manager
  * @param {Boolean} [fading=True] - If the position is fading or not
  */
 class TrackedPosition {
-    constructor(p5, x, y, width, lifespan, colorGradient, removeTrack, fading = true) {
+    constructor(p5, x, y, width, lifespan, fadingTimeout, colorGradient, removeTrack, fading = true) {
         this.p5 = p5;
         this.position = {x: x, y: y};
         this.width = 0.75 * width;
         this.lifespan = lifespan;
+        this.fadingTimeout = fadingTimeout;
         this.colorGradient = colorGradient;
 
         this.removePosition = removeTrack;
@@ -201,7 +206,7 @@ class TrackedPosition {
     fading() {
         this.lifespan--;
         if (this.lifespan > 0)
-            setTimeout(this.fading, 100);
+            setTimeout(this.fading, this.fadingTimeout);
         else
             this.removePosition();
     }

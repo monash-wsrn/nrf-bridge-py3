@@ -1,12 +1,7 @@
-import {RobotTrackedPositionManager} from "./trackedPosition"
-import {Gradient} from "./gradient"
+import {RobotTrackedPositionManager} from './trackedPosition'
+import {Gradient} from './gradient'
+import * as constants from './constants'
 
-//Triangle constants
-let ROBOT_TRIANGLE_HEIGHT = Math.sqrt((16 * 16) - 64);
-let x1 = -8, y1 = 0, x2 = 8, y2 = 0, x3 = 0, y3 = -ROBOT_TRIANGLE_HEIGHT;
-
-//Options Constants
-let TRACKING_TIMEOUT = 10;
 
 /**
  * @class Robot
@@ -42,7 +37,7 @@ export class Robot {
         this.gradient = false;
         this.tracking = false;
         this.trackingCount = 0;
-        this.trackingTimeout = options.trackingTimeout || TRACKING_TIMEOUT;
+        this.trackingTimeout = options.trackingTimeout || constants.TRACKING_TIMEOUT;
         this.trackedPositionManager = new RobotTrackedPositionManager(this.p, this);
         this.gradientManager = new Gradient(this.p, this);
 
@@ -127,7 +122,7 @@ export class Robot {
 
         this.p.translate(this.triangle.baseCenter.x, this.triangle.baseCenter.y);
         this.p.rotate(this.getRadAngle());
-        this.p.triangle(x1, y1, x2, y2, x3, y3);
+        this.p.triangle(constants.x1, constants.y1, constants.x2, constants.y2, constants.x3, constants.y3);
 
         this.p.pop();
     }

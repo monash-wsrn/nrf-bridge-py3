@@ -1,14 +1,7 @@
-import {Robot} from "./robot"
-import {TrackedPositionManager} from "./trackedPosition"
-import {GradientManager} from "./gradient"
-
-//Default constants
-let ROBOT_WIDTH = 45;
-let ROBOT_COLOR = "#FFFFFF";
-let ROBOT_TEXT_SIZE = 20;
-let ROBOT_TRIANGLE_COLOR = "#FF0000";
-
-let AFTER_MOVE_TIMEOUT = 10;
+import {Robot} from './robot'
+import {TrackedPositionManager} from './trackedPosition'
+import {GradientManager} from './gradient'
+import * as constants from './constants'
 
 /**
  * @class RobotManager
@@ -30,7 +23,7 @@ export class RobotManager {
         this.gradientManager = new GradientManager();
 
         this.afterMoveCounter = 0;
-        this.afterMoveTimeout = AFTER_MOVE_TIMEOUT;
+        this.afterMoveTimeout = constants.AFTER_MOVE_TIMEOUT;
 
         if (onSpy)
             this.onSpy = onSpy;
@@ -199,10 +192,10 @@ export class RobotManager {
 export class RobotFactory {
     constructor(p5, params = {}, addRobot) {
         this.p = p5;
-        this.robotWidth = params.robotWidth || ROBOT_WIDTH;
-        this.robotColor = params.robotColor || ROBOT_COLOR;
-        this.textSize = params.textSize || ROBOT_TEXT_SIZE;
-        this.triangleColor = params.triangleColor || ROBOT_TRIANGLE_COLOR;
+        this.robotWidth = params.robotWidth || constants.ROBOT_WIDTH;
+        this.robotColor = params.robotColor || constants.ROBOT_COLOR;
+        this.textSize = params.textSize || constants.ROBOT_TEXT_SIZE;
+        this.triangleColor = params.triangleColor || constants.ROBOT_TRIANGLE_COLOR;
         this.options = params.options || {};
 
         // this.robots = [];

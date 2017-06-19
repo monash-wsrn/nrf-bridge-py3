@@ -1,3 +1,5 @@
+import {WEBSOCKET_SERVER_ADDRESS} from './constants'
+
 /**
  * @class WebsocketConnection
  * @desc Class to handle the connection to a webService using websockets, createConnection is meant to be used instead of the constructor
@@ -17,7 +19,7 @@ export class WebsocketConnection {
     static createConnection(consoleLogs = false, onMessage = () => {},
                                                  onOpen = () => {},
                                                  onClose = () => {},
-                                                 onError = () => {}, address="ws://127.0.0.1:8765/") {
+                                                 onError = () => {}, address=WEBSOCKET_SERVER_ADDRESS) {
         if (onOpen === (() => {}))
             onOpen = () => {
                 this.send("Connection opened");

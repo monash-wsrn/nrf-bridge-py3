@@ -3,12 +3,12 @@
 
 //See this more like an example of using the architecture, than a big guideline
 
+import {RobotManager} from './robotManager'
+import {ButtonCond} from './actionButton'
+import {WebsocketConnection} from './websocketConnection'
+
 let p5 = require('p5');
 window.p5 = p5;
-
-import {RobotManager} from "./robotManager"
-import {ButtonCond} from "./actionButton"
-import {WebsocketConnection} from "./websocketConnection"
 
 // Setting up the html elements
 let app = document.getElementById("app");
