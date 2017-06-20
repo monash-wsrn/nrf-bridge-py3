@@ -3,6 +3,7 @@
 html, body {
     height: 100%;
     width: 100%;
+    min-width: 700px;
     margin: 0;
 }
 
@@ -12,17 +13,22 @@ html, body {
 }
 
 .appCanvas {
-    width: 80%;
+    width: 85%;
     position: relative;
     float: left;
     height: 100%;
 }
 
 .optionsDiv {
-    width: 20%;
+    width: 15%;
     position: relative;
     float: left;
     height: 100%;
+}
+
+.spyDiv {
+    width: 100%;
+    font-size: 80%;
 }
 
 .title {
@@ -31,7 +37,9 @@ html, body {
 }
 
 .button {
-    margin: 5px;
+    width: calc(100% - 20px);
+    max-width: 200px;
+    margin: 10px;
 }
 
 .button1 {

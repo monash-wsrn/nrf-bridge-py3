@@ -79,7 +79,7 @@ class Bridge:
     def send_packet_check_response_without_retry(self, packet):
         x = self.send_packet(packet)
         if x is None:
-            raise RuntimeError('No Response')
+            raise RuntimeError('Empty Response')
         if x[0] != packet[0]:
             raise RuntimeError('Unexpected response: %s'%repr(list(bytearray(x))))
         return x[1:]
