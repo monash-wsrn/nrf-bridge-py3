@@ -228,3 +228,15 @@ def display():
         message.pack(side=tkinter.BOTTOM)
 
         tkinter.mainloop()
+
+
+def camera_settings_test():
+    ID = 0
+    for address, info in eBugs.items():
+        nrf.set_TX_address(address)
+        nrf.LCD_backlight(0)
+        nrf.enable_LEDs(0,1,0,0)
+        nrf.LED_brightness(5)
+        LED_set = ["0x0e07", "0x7038", "0x81c0"]
+        nrf.set_LEDs(*LED_set)
+        ID += 1
