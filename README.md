@@ -1,4 +1,4 @@
-#Architecture
+# Directories
 * libraries : Contains the libraries used by the scripts
 * client : Contains the web JS application used to display robots.
 * server : Contains the part that transmit data from camera to client
