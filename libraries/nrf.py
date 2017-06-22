@@ -451,6 +451,20 @@ class Bridge:
         When we adjust the sliders, it sends this. 
         """
         self.send_packet(b'\x93' + struct.pack('<' + 'B' * 8, *thresholds))
+
+    def set_camera_exposure(self, n):
+        self.camera_write_reg(4,n&3)
+        self.camera_write_reg(0x10,(n>>2)&0xff)
+        self.camera_write_reg(0xa1,(n>>10)&0x3f)
+    
+    def set_camera_gain(self, n):
+        self.camera_write_reg(0, n)
+    
+    def set_camera_blue_gain(self, n):
+        self.camera_write_reg(1, n)
+    
+    def set_camera_red_gain(self, n):
+        self.camera_write_reg(2, n)
     
     def camera_write_reg(self, reg, value):
         self.send_packet(b'\x91' + struct.pack('<BB',reg,value))

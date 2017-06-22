@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import settings
 from libraries.nrf import Bridge
@@ -37,13 +37,17 @@ class thresholds:
             cv2.setTrackbarPos(['Red', 'Green', 'Blue', 'Magenta'][self.i / 2] + ' ' + ['U', 'V'][self.i % 2],
                                'Blob camera', old)
 
-
 cv2.namedWindow('Blob camera')
 i = 0
 for colour in ['Red', 'Green', 'Blue', 'Magenta']:
     for channel in ['U', 'V']:
         cv2.createTrackbar(colour + ' ' + channel, 'Blob camera', thresholds.values[i], 255, thresholds(i))
         i += 1
+cv2.createTrackbar('Exposure','Blob camera',40,480,lambda x:nrf.set_camera_exposure(x)) #exposure in image rows (max is height of image)
+cv2.createTrackbar('Analogue gain','Blob camera',0,255,lambda x:nrf.set_camera_gain(x)) #analogue gain (best to keep at 0 and adjust exposure)
+cv2.createTrackbar('Blue gain','Blob camera',128,255,lambda x:nrf.set_camera_blue_gain(x)) #white balance: gain adjustment for blue channel
+cv2.createTrackbar('Red gain','Blob camera',128,255,lambda x:nrf.set_camera_red_gain(x)) #white balance: gain adjustment for red channel
+nrf.camera_write_reg(0x13,0) #disable AEC, AGC, and AWB
 
 ts = 0
 frame_blobs = []
