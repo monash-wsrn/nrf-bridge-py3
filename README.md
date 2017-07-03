@@ -37,10 +37,23 @@ of LEDs on each ebug to be matched.
 
 * I only draw a circle on ebug when its LED sequence is recognized.
 
-#Architecture
+# Architecture
 The code is divided in 5 parts.
 * libraries : Contains every libraries used by the scripts
 * client : Contains the web JS application used to display robots.
 * server : Contains the part that transmit data from camera to client
 * scripts : Contains every scripts used to directly communicate to robots or camera
 * nrf-bridge.cydsn : Contains every files related to the firmware
+
+# Setup instructions
+
+For installing the required package in order to have the server works. Be careful, asyncio requires at least Python 3.4+.
+```Python
+pip3 install numpy scipy scikit-learn asyncio websockets
+```
+For installing opencv, which is required to calibrate the camera:
+```
+sudo add-apt-repository ppa:orangain/opencv
+sudo apt-get update
+sudo apt-get install python3-opencv
+```
