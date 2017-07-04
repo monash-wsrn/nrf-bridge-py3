@@ -12,6 +12,7 @@ window.p5 = p5;
 
 // Setting up the html elements
 let app = document.getElementById("app");
+let title = document.getElementById("mainTitle");
 
 let canvasDiv = document.createElement("div");
 let optionsDiv = document.createElement("div");
@@ -26,12 +27,15 @@ let button2 = new ButtonCond(() => {
 }, "Enable Tracking", "Disable Tracking", "button2");
 let button3 = new ButtonCond(() => {
 }, "Enable Spying", "Disable Spying", "button3");
+let button4 = new ButtonCond(() => {
+}, "Start Connection", "Stop Connection", "button4");
 
 app.appendChild(canvasDiv);
 app.appendChild(optionsDiv);
 optionsDiv.appendChild(button1.element);
 optionsDiv.appendChild(button2.element);
 optionsDiv.appendChild(button3.element);
+title.appendChild(button4.element);
 
 let spyDiv = document.createElement("div");
 spyDiv.className = "spyDiv";
@@ -133,12 +137,12 @@ let sketch = (p) => {
 let myp5 = new p5(sketch);
 
 
-let websocket;
+
 
 //Setting the websocket connection on load
 window.addEventListener("load", function () {
 
-    let firstMessage = true;
+    let websocket;
 
     let onMessage = function (msg) {
         let dataArray = JSON.parse(msg.data);
@@ -148,26 +152,23 @@ window.addEventListener("load", function () {
             array[index].x *= (canvasWidth / 1000);
             array[index].y *= (canvasHeight / 1000);
 
-            if (firstMessage) {
-                //Arbitrarily setting half of the robots on each factory
+            if (!RobotMan.getRobot(element.id))
                 if ((index % 2) === 0)
                     RobotFact1.getRobot(element.id, element.x, element.y, element.angle);
                 else
                     RobotFact2.getRobot(element.id, element.x, element.y, element.angle);
-            }
-        });
-        if(!firstMessage)
-            RobotMan.moveRobots(dataArray);
 
-        firstMessage = false
+        });
+
+        RobotMan.moveRobots(dataArray);
+
     };
 
-    websocket = WebsocketConnection.createConnection(false, onMessage);
+    button4.setAction(() => {
+        if (!websocket || websocket._websocket.readyState === 3)
+            websocket = WebsocketConnection.createConnection(false, onMessage);
+        else
+            websocket.closeConnection();
+    });
 
-});
-
-//Closing it before unload
-window.addEventListener("beforeunload", function (event) {
-    event.preventDefault();
-    websocket.closeConnection();
 });
