@@ -75,6 +75,14 @@ class Bridge:
         if x[0] != packet[0]:
             raise RuntimeError('Unexpected response: %s'%repr(list(bytearray(x))))
         return x[1:]
+
+    def send_packet_check_response_without_retry(self, packet):
+        x = self.send_packet(packet)
+        if x is None:
+            raise RuntimeError('Empty Response')
+        if x[0] != packet[0]:
+            raise RuntimeError('Unexpected response: %s'%repr(list(bytearray(x))))
+        return x[1:]
         
     def get_ID_type(self):
         x = self.send_packet_check_response(b'\x01')
@@ -432,7 +440,7 @@ class Bridge:
         timestamped with the frame it corresponds to so you can tell
         when you've missed a frame.
         """
-        x = self.send_packet_check_response(b'\x90')
+        x = self.send_packet_check_response_without_retry(b'\x90')
         n = len(x)//4
         z = struct.unpack(b'<' + b'I' * n,x)
         unpack = lambda i: tuple(i >> offset & (1 << length) - 1 for offset,length in [(0, 11), (11, 11), (22, 2), (24, 8)])
@@ -443,6 +451,20 @@ class Bridge:
         When we adjust the sliders, it sends this. 
         """
         self.send_packet(b'\x93' + struct.pack('<' + 'B' * 8, *thresholds))
+
+    def set_camera_exposure(self, n):
+        self.camera_write_reg(4,n&3)
+        self.camera_write_reg(0x10,(n>>2)&0xff)
+        self.camera_write_reg(0xa1,(n>>10)&0x3f)
+    
+    def set_camera_gain(self, n):
+        self.camera_write_reg(0, n)
+    
+    def set_camera_blue_gain(self, n):
+        self.camera_write_reg(1, n)
+    
+    def set_camera_red_gain(self, n):
+        self.camera_write_reg(2, n)
     
     def camera_write_reg(self, reg, value):
         self.send_packet(b'\x91' + struct.pack('<BB',reg,value))
