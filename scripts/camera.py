@@ -7,20 +7,6 @@ import cv2
 import math
 import time
 
-nrf = Bridge('/dev/ttyACM0')  # '/dev/ttyACM0'
-a = nrf.assign_addresses()
-
-for i in list(a.keys()):
-    nrf.set_TX_address(i)
-    if nrf.get_ID_type()[6] == 1:  # find first camera in neighbours
-        camera_address = i
-        break
-else:
-    raise RuntimeError('No cameras found')
-
-
-# nrf.send_packet('\x94'+chr(64)) #overclock PSoC and camera (default is 48MHz, which gives 15fps SXGA, 30fps VGA, 60fps CIF and 120fps QCIF)
-
 class thresholds:
     values = [0x79, 0x9a, 0xb1, 0x5a, 0xc6, 0x70, 0xa3, 0x82]
 
@@ -34,8 +20,21 @@ class thresholds:
             nrf.set_camera_thresholds(thresholds.values)
         except RuntimeError as e:  # ACK not received, set trackbar back to original value
             thresholds.values[self.i] = old
-            cv2.setTrackbarPos(['Red', 'Green', 'Blue', 'Magenta'][self.i / 2] + ' ' + ['U', 'V'][self.i % 2],
-                               'Blob camera', old)
+            cv2.setTrackbarPos(['Red', 'Green', 'Blue', 'Magenta'][self.i / 2] + ' ' + ['U', 'V'][self.i % 2], 'Blob camera', old)
+# class thresholds
+
+nrf = Bridge('/dev/ttyACM0')  # '/dev/ttyACM0'
+a = nrf.assign_addresses()
+
+for i in list(a.keys()):
+    nrf.set_TX_address(i)
+    if nrf.get_ID_type()[6] == 1:  # find first camera in neighbours
+        camera_address = i
+        break
+else:
+    raise RuntimeError('No cameras found')
+
+# nrf.send_packet('\x94'+chr(64)) #overclock PSoC and camera (default is 48MHz, which gives 15fps SXGA, 30fps VGA, 60fps CIF and 120fps QCIF)
 
 cv2.namedWindow('Blob camera')
 i = 0
@@ -79,3 +78,4 @@ while True:
     except RuntimeError as e:
         print(e)
         continue  # TODO check what kind of error
+# while True
